@@ -1,0 +1,98 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { AddShiftButton } from "@/components/calendar/add-shift-button";
+import { DaySection } from "@/components/calendar/day-list";
+import { HoursSummary } from "@/components/calendar/hours-summary";
+import { MonthView } from "@/components/calendar/month-view";
+import { ShiftEditorProvider } from "@/components/calendar/shift-editor";
+import { CalendarToolbar } from "@/components/calendar/toolbar";
+import type { CalendarMember } from "@/components/calendar/types";
+import { WeekView } from "@/components/calendar/week-view";
+import { AppHeader } from "@/components/nav/app-header";
+import { APP_TIME_ZONE } from "@/config/app";
+import { requireUser } from "@/lib/auth/guards";
+import { calendarHref, parseCalendarState, visibleRange } from "@/lib/domain/calendar";
+import { todayISO } from "@/lib/domain/dates";
+import { formatLongDay } from "@/lib/domain/format";
+import { groupByDate, hoursSummary } from "@/lib/domain/schedule";
+import { getShifts, getTeam } from "@/lib/queries";
+import { cn } from "@/lib/utils";
+
+export const metadata: Metadata = { title: "Calendario" };
+
+export default async function CalendarPage({ searchParams }: PageProps<"/calendar">) {
+  const { user, company, companyId, isAdmin } = await requireUser();
+  const params = await searchParams;
+  const today = todayISO(APP_TIME_ZONE);
+  const state = parseCalendarState(params, today);
+  const onlyMine = params.mine === "1";
+  const extraParams = onlyMine ? "&mine=1" : "";
+
+  const range = visibleRange(state);
+  const [team, allShifts] = await Promise.all([getTeam(companyId), getShifts(companyId, range.from, range.to)]);
+
+  const members = new Map<string, CalendarMember>(team.map((m) => [m.id, m]));
+  const shifts = onlyMine ? allShifts.filter((s) => s.userId === user.id) : allShifts;
+  const byDate = groupByDate(shifts);
+  const listProps = { members, currentUserId: user.id, canEdit: isAdmin };
+
+  // Riepilogo ore: gli admin vedono tutti, un dipendente solo sé stesso.
+  const summaryMembers = isAdmin && !onlyMine ? team : team.filter((m) => m.id === user.id);
+  const summary = state.view === "week" ? hoursSummary(summaryMembers, allShifts) : [];
+
+  const filterHref = (mine: boolean) => calendarHref(state) + (mine ? "&mine=1" : "");
+
+  const content = (
+    <main className="mx-auto grid max-w-2xl gap-4 px-4 py-4">
+      <h1 className="sr-only">Calendario turni</h1>
+      <CalendarToolbar state={state} today={today} extraParams={extraParams} />
+
+      <nav aria-label="Filtro turni" className="flex gap-2">
+        {[
+          { mine: false, label: "Tutti" },
+          { mine: true, label: "Solo i miei" },
+        ].map(({ mine, label }) => (
+          <Link
+            key={label}
+            href={filterHref(mine)}
+            aria-current={onlyMine === mine ? "page" : undefined}
+            className={cn(
+              "flex h-9 items-center rounded-full border px-4 text-sm font-medium transition-colors",
+              onlyMine === mine
+                ? "border-primary bg-primary/10 text-primary"
+                : "text-muted-foreground hover:text-foreground",
+            )}
+          >
+            {label}
+          </Link>
+        ))}
+      </nav>
+
+      {state.view === "week" && <WeekView date={state.date} today={today} byDate={byDate} {...listProps} />}
+      {state.view === "day" && (
+        <DaySection
+          date={state.date}
+          title={formatLongDay(state.date)}
+          isToday={state.date === today}
+          shifts={byDate.get(state.date) ?? []}
+          {...listProps}
+        />
+      )}
+      {state.view === "month" && (
+        <MonthView date={state.date} today={today} byDate={byDate} members={members} extraParams={extraParams} />
+      )}
+
+      {summary.length > 0 && <HoursSummary rows={summary} members={members} />}
+
+      {isAdmin && <AddShiftButton date={state.view === "month" ? today : state.date} variant="fab" />}
+      {isAdmin && <div className="h-16" aria-hidden />}
+    </main>
+  );
+
+  return (
+    <>
+      <AppHeader title={company.name} subtitle={isAdmin ? "Amministratore" : `${user.firstName} ${user.lastName}`} />
+      {isAdmin ? <ShiftEditorProvider members={team}>{content}</ShiftEditorProvider> : content}
+    </>
+  );
+}

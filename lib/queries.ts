@@ -1,0 +1,59 @@
+import "server-only";
+import { fromUTCDate, toUTCDate, type ISODate } from "@/lib/domain/dates";
+import { prisma } from "@/lib/prisma";
+
+export const memberSelect = {
+  id: true,
+  firstName: true,
+  lastName: true,
+  role: true,
+  isOwner: true,
+  weeklyMinutes: true,
+  color: true,
+  email: true,
+} as const;
+
+export function getTeam(companyId: string) {
+  return prisma.user.findMany({
+    where: { companyId },
+    select: memberSelect,
+    orderBy: [{ firstName: "asc" }, { lastName: "asc" }],
+  });
+}
+
+export type TeamMember = Awaited<ReturnType<typeof getTeam>>[number];
+
+export function getMember(companyId: string, id: string) {
+  return prisma.user.findFirst({ where: { id, companyId }, select: memberSelect });
+}
+
+export async function getShifts(companyId: string, from: ISODate, to: ISODate, userId?: string) {
+  const rows = await prisma.shift.findMany({
+    where: { companyId, date: { gte: toUTCDate(from), lte: toUTCDate(to) }, ...(userId ? { userId } : {}) },
+    select: { id: true, userId: true, date: true, start: true, end: true, note: true },
+    orderBy: [{ date: "asc" }, { start: "asc" }],
+  });
+  return rows.map((s) => ({ ...s, date: fromUTCDate(s.date) }));
+}
+
+export type ShiftItem = Awaited<ReturnType<typeof getShifts>>[number];
+
+export function getCompaniesOverview() {
+  return prisma.company.findMany({
+    select: { id: true, name: true, code: true, createdAt: true, _count: { select: { users: true, shifts: true } } },
+    orderBy: { createdAt: "desc" },
+  });
+}
+
+export function getCompanyForSuperAdmin(id: string) {
+  return prisma.company.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      name: true,
+      code: true,
+      createdAt: true,
+      users: { select: memberSelect, orderBy: [{ firstName: "asc" }, { lastName: "asc" }] },
+    },
+  });
+}

@@ -1,0 +1,84 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  EMPLOYEE
+}
+
+model Company {
+  id        String   @id @default(cuid())
+  name      String
+  code      String   @unique
+  createdAt DateTime @default(now())
+
+  users  User[]
+  shifts Shift[]
+}
+
+model User {
+  id            String   @id @default(cuid())
+  companyId     String
+  firstName     String
+  lastName      String
+  role          Role     @default(EMPLOYEE)
+  isOwner       Boolean  @default(false)
+  email         String?  @unique
+  passwordHash  String?
+  /// HMAC-SHA256 del codice personale (AUTH_SECRET come pepper)
+  codeHash      String   @unique
+  weeklyMinutes Int      @default(0)
+  color         String
+  createdAt     DateTime @default(now())
+
+  company  Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  shifts   Shift[]
+  sessions Session[]
+
+  @@index([companyId])
+}
+
+model Shift {
+  id        String   @id @default(cuid())
+  companyId String
+  userId    String
+  date      DateTime @db.Date
+  /// HH:MM
+  start     String
+  /// HH:MM
+  end       String
+  note      String?
+  createdAt DateTime @default(now())
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([companyId, date])
+  @@index([userId, date])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  tokenHash    String   @unique
+  userId       String?
+  isSuperAdmin Boolean  @default(false)
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model LoginAttempt {
+  key         String    @id
+  count       Int       @default(0)
+  lockedUntil DateTime?
+  updatedAt   DateTime  @updatedAt
+}

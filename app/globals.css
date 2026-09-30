@@ -1,0 +1,114 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* Brand ispirato a Notion (awesome-design-md): neutri caldi, viola come unico accento. */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-inter);
+  --font-heading: var(--font-inter);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+/* Scala tipografica più generosa per il mobile */
+@theme {
+  --text-xs: 0.8125rem;
+  --text-xs--line-height: 1.4;
+  --text-sm: 0.9375rem;
+  --text-sm--line-height: 1.5;
+  --text-base: 1rem;
+  --text-base--line-height: 1.55;
+  --text-lg: 1.125rem;
+  --text-lg--line-height: 1.4;
+}
+
+:root {
+  --radius: 0.625rem;
+  --background: #ffffff;
+  --foreground: #37352f;
+  --card: #ffffff;
+  --card-foreground: #37352f;
+  --popover: #ffffff;
+  --popover-foreground: #37352f;
+  --primary: #5645d4;
+  --primary-foreground: #ffffff;
+  --secondary: #f6f5f4;
+  --secondary-foreground: #37352f;
+  --muted: #f6f5f4;
+  --muted-foreground: #5d5b54;
+  --accent: #f0eeec;
+  --accent-foreground: #1a1a1a;
+  --destructive: #c92a2a;
+  --success: #1b7f32;
+  --warning: #b34a00;
+  --border: #e5e3df;
+  --input: #c8c4be;
+  --ring: #5645d4;
+}
+
+.dark {
+  --background: #191918;
+  --foreground: #ecebe9;
+  --card: #222220;
+  --card-foreground: #ecebe9;
+  --popover: #262624;
+  --popover-foreground: #ecebe9;
+  --primary: #a197f0;
+  --primary-foreground: #14102e;
+  --secondary: #2c2c2a;
+  --secondary-foreground: #ecebe9;
+  --muted: #2c2c2a;
+  --muted-foreground: #b3b0a8;
+  --accent: #33332f;
+  --accent-foreground: #ffffff;
+  --destructive: #ff8787;
+  --success: #69db7c;
+  --warning: #ffa94d;
+  --border: #3a3936;
+  --input: #55534e;
+  --ring: #a197f0;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    @apply bg-background text-foreground text-base;
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}
