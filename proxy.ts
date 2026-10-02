@@ -1,7 +1,8 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { SESSION_COOKIE, SESSION_DAYS } from "@/config/app";
 
-const PUBLIC_PATHS = ["/login", "/signup", "/admin/login"];
+// "/" è la landing: solo corrispondenza esatta, le sottopagine restano protette.
+const PUBLIC_PATHS = ["/", "/login", "/signup", "/admin/login"];
 
 /**
  * Controllo ottimistico: solo presenza del cookie e rinnovo della sua scadenza.
