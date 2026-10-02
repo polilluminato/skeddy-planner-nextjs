@@ -18,5 +18,3 @@ export const employeeSchema = z.object({
     }),
   color: z.string().refine((c) => EMPLOYEE_COLOR_VALUES.includes(c), "Colore non valido."),
 });
-
-export type EmployeeInput = z.infer<typeof employeeSchema>;

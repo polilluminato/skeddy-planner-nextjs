@@ -43,7 +43,7 @@ export function MonthView({
                 aria-label={label}
                 aria-current={isToday ? "date" : undefined}
                 className={cn(
-                  "flex min-h-14 flex-col items-center gap-1 rounded-lg py-1.5 transition-colors hover:bg-accent",
+                  "flex min-h-14 flex-col items-center gap-1 rounded-lg py-1.5 transition-colors hover:bg-accent desktop:min-h-24",
                   !inMonth && "opacity-45",
                 )}
               >

@@ -53,7 +53,7 @@ export function HoursSummary({
       <h2 id="hours-title" className="mb-3 font-semibold">
         {title}
       </h2>
-      <ul className="grid gap-3">
+      <ul className="grid gap-3 desktop:grid-cols-[repeat(auto-fill,minmax(min(16rem,100%),1fr))] desktop:gap-x-8">
         {rows.map((row) => {
           const member = members.get(row.userId);
           if (!member) return null;

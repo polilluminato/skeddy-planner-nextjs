@@ -8,5 +8,3 @@ export const messageSchema = z.object({
     .min(1, "Scrivi un messaggio.")
     .max(MAX_MESSAGE_LENGTH, `Massimo ${MAX_MESSAGE_LENGTH} caratteri.`),
 });
-
-export type MessageInput = z.infer<typeof messageSchema>;

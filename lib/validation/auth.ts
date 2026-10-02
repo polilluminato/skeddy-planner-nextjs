@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { normalizeCompanyCode } from "@/lib/domain/company-code";
-import { normalizePersonalCode } from "@/lib/domain/personal-code";
+import { isValidPersonalCode, normalizePersonalCode } from "@/lib/domain/personal-code";
 import { emailField, nameField, passwordField } from "./fields";
 
 export const signupSchema = z.object({
@@ -23,7 +23,7 @@ export const codeLoginSchema = z.object({
   personalCode: z
     .string({ error: "Inserisci il codice personale." })
     .transform(normalizePersonalCode)
-    .pipe(z.string().regex(/^[A-Z0-9]{8}$/, "Il codice personale ha 8 caratteri.")),
+    .refine(isValidPersonalCode, "Il codice personale ha 8 caratteri."),
 });
 
 export const emailLoginSchema = z.object({

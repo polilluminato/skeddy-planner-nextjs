@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { deleteShift, saveShift } from "@/actions/shifts";
 import { FormError } from "@/components/common/form-error";
 import { SubmitButton } from "@/components/common/submit-button";
+import { TimeField } from "@/components/common/time-field";
 import { Button } from "@/components/ui/button";
 import {
   Drawer,
@@ -22,7 +23,7 @@ import { useFormAction } from "@/hooks/use-form-action";
 import { formatLongDay } from "@/lib/domain/format";
 import { memberName, type CalendarMember, type CalendarShift } from "./types";
 
-type Draft = { shift?: CalendarShift; date: string; userId?: string };
+type Draft = { shift?: CalendarShift; date: string; userId?: string; start?: string; end?: string };
 
 const EditorContext = createContext<{ open: (draft: Draft) => void } | null>(null);
 
@@ -132,27 +133,11 @@ function ShiftForm({ draft, members, onDone }: { draft: Draft; members: Calendar
         <div className="grid grid-cols-2 gap-3">
           <div className="grid gap-1.5">
             <Label htmlFor="shift-start">Inizio</Label>
-            <Input
-              id="shift-start"
-              name="start"
-              type="time"
-              step={300}
-              defaultValue={editing?.start ?? "09:00"}
-              required
-              className="h-11 text-base tabular-nums md:text-base"
-            />
+            <TimeField id="shift-start" name="start" label="Inizio" defaultValue={editing?.start ?? draft.start ?? "09:00"} />
           </div>
           <div className="grid gap-1.5">
             <Label htmlFor="shift-end">Fine</Label>
-            <Input
-              id="shift-end"
-              name="end"
-              type="time"
-              step={300}
-              defaultValue={editing?.end ?? "13:00"}
-              required
-              className="h-11 text-base tabular-nums md:text-base"
-            />
+            <TimeField id="shift-end" name="end" label="Fine" defaultValue={editing?.end ?? draft.end ?? "13:00"} />
           </div>
         </div>
 

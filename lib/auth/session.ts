@@ -1,11 +1,10 @@
 import "server-only";
 import { cache } from "react";
 import { cookies } from "next/headers";
-import { SESSION_COOKIE } from "@/config/app";
+import { SESSION_COOKIE, SESSION_DAYS } from "@/config/app";
 import { prisma } from "@/lib/prisma";
 import { randomToken, sha256 } from "./crypto";
 
-export const SESSION_DAYS = 30;
 const DAY_MS = 24 * 60 * 60 * 1000;
 /** Rinnovo scorrevole: se mancano meno di 15 giorni, la scadenza riparte da capo. */
 const RENEW_THRESHOLD_MS = 15 * DAY_MS;
@@ -40,22 +39,13 @@ export async function destroySession(): Promise<void> {
   store.delete(SESSION_COOKIE);
 }
 
-/** Chiude tutte le sessioni di un utente (es. codice rigenerato o utente eliminato). */
-export async function destroyUserSessions(userId: string): Promise<void> {
-  await prisma.session.deleteMany({ where: { userId } });
-}
-
-const sessionInclude = {
-  user: { include: { company: true } },
-} as const;
-
 export const getSession = cache(async () => {
   const token = (await cookies()).get(SESSION_COOKIE)?.value;
   if (!token) return null;
 
   const session = await prisma.session.findUnique({
     where: { tokenHash: sha256(token) },
-    include: sessionInclude,
+    include: { user: { include: { company: true } } },
   });
   if (!session) return null;
 
@@ -72,5 +62,3 @@ export const getSession = cache(async () => {
   }
   return session;
 });
-
-export type AppSession = NonNullable<Awaited<ReturnType<typeof getSession>>>;

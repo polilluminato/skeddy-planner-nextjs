@@ -4,6 +4,15 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Layout desktop con sidebar: da md in su, solo dove il layout dell'app ha `data-sidebar` (gli admin). */
+@custom-variant desktop {
+  @media (width >= 48rem) {
+    &:where([data-sidebar], [data-sidebar] *) {
+      @slot;
+    }
+  }
+}
+
 /* Brand ispirato a Notion (awesome-design-md): neutri caldi, viola come unico accento. */
 @theme inline {
   --color-background: var(--background);

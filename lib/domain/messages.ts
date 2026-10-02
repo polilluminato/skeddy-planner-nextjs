@@ -1,4 +1,4 @@
-import { MESSAGES_MAX_LIMIT, MESSAGES_PAGE_SIZE } from "@/config/app";
+import { APP_TIME_ZONE, MESSAGES_MAX_LIMIT, MESSAGES_PAGE_SIZE } from "@/config/app";
 import { addDays, todayISO } from "./dates";
 import { formatClock, formatLongDay } from "./format";
 
@@ -21,18 +21,18 @@ export type TimelineItem =
       mine: boolean;
     };
 
-/** Messaggi in ordine cronologico con un separatore a ogni cambio di giorno (nel fuso indicato). */
+/** Messaggi in ordine cronologico con un separatore a ogni cambio di giorno (nel fuso dell'app). */
 export function buildTimeline(
   messages: MessageRow[],
-  { meId, timeZone, now = new Date() }: { meId: string; timeZone: string; now?: Date },
+  { meId, now = new Date() }: { meId: string; now?: Date },
 ): TimelineItem[] {
-  const today = todayISO(timeZone, now);
+  const today = todayISO(APP_TIME_ZONE, now);
   const yesterday = addDays(today, -1);
   const items: TimelineItem[] = [];
   let lastDay: string | null = null;
 
   for (const m of messages) {
-    const day = todayISO(timeZone, m.createdAt);
+    const day = todayISO(APP_TIME_ZONE, m.createdAt);
     if (day !== lastDay) {
       const label = day === today ? "Oggi" : day === yesterday ? "Ieri" : formatLongDay(day);
       items.push({ kind: "day", key: `day-${day}`, label });
@@ -44,7 +44,7 @@ export function buildTimeline(
       id: m.id,
       body: m.body,
       sentAt: m.createdAt.toISOString(),
-      time: formatClock(m.createdAt, timeZone),
+      time: formatClock(m.createdAt),
       authorName: m.author ? `${m.author.firstName} ${m.author.lastName}` : "Ex amministratore",
       authorColor: m.author?.color ?? null,
       mine: m.author?.id === meId,

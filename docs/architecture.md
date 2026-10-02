@@ -24,7 +24,7 @@ Schema architetturale di una app web mobile-first, installabile come PWA, multi-
 ```text
 app/
   (auth)/            # pagine pubbliche di accesso/registrazione, con layout proprio
-  (app)/             # area autenticata: layout con header + bottom nav, un guard nel layout
+  (app)/             # area autenticata: layout con header + bottom nav (sidebar su desktop per gli admin), un guard nel layout
   (<ruolo>)/         # eventuale area per un ruolo con UI diversa (layout proprio)
   admin/             # area super admin separata
   manifest.ts        # manifest PWA
@@ -36,7 +36,7 @@ actions/             # Server Actions, un file per dominio ("use server")
 components/
   ui/                # componenti shadcn generati (da non modificare a mano)
   common/            # blocchi riusabili: SubmitButton, ConfirmAction, FormError…
-  nav/               # header, bottom nav, switch del tema
+  nav/               # header, navigazione (bottom nav / sidebar), switch del tema
   <feature>/         # componenti di dominio, una cartella per feature
 hooks/               # hook client (useFormAction)
 lib/
@@ -102,6 +102,7 @@ Gli argomenti extra si legano con `.bind` (`saveItem.bind(null, id)`); i messagg
 - **Colori come dati** (colori scelti dall'utente per un'entità): vanno in `style`, mai nelle classi; per sfondi tenui si usa `color-mix(in srgb, <colore> N%, transparent | var(--card))`, così il tint si adatta al tema.
 - **Scala tipografica** personalizzata in `@theme` (`--text-xs…--text-lg` con line-height) quando i default risultano piccoli su mobile; `body` usa `text-base`.
 - **Mobile-first**: contenuto `max-w-2xl`, header sticky, bottom nav fissa, safe area iOS (`env(safe-area-inset-*)`), `100dvh`. Target touch ≥ 44px (`min-h-11`).
+- **Desktop solo per gli admin**: il layout dell'app ha `data-sidebar` solo per gli `ADMIN`; la variante `desktop:` (`@custom-variant` in `app/globals.css`, da `md`) trasforma la bottom nav in una sidebar a sinistra e sposta gli elementi fissati sopra la nav. I dipendenti vedono sempre la versione mobile.
 - **Gerarchia nelle card**: un titolo forte, metadati in `text-muted-foreground`, dati chiave (orari, importi) in `font-semibold tabular-nums`, separatori `border-t` per le sezioni secondarie.
 - **Accessibilità**: `aria-label` sui pulsanti che contengono solo un'icona, `aria-current` sulla navigazione, `section` + `aria-labelledby`, `dl/dt/dd` per le coppie etichetta/valore, icone decorative con `aria-hidden`.
 - **Viste per dispositivo**: un ruolo può avere un route group dedicato con un layout diverso (es. schermo sempre acceso: niente nav, `router.refresh()` periodico e al `visibilitychange`). I filtri e la navigazione stanno nei `searchParams`, così il refresh li conserva.

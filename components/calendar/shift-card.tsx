@@ -11,10 +11,9 @@ type Props = {
   member: CalendarMember;
   isMine: boolean;
   canEdit: boolean;
-  showName?: boolean;
 };
 
-export function ShiftCard({ shift, member, isMine, canEdit, showName = true }: Props) {
+export function ShiftCard({ shift, member, isMine, canEdit }: Props) {
   const editor = useShiftEditor();
   const name = memberName(member);
   const duration = formatMinutes(shiftMinutes(shift));
@@ -28,12 +27,10 @@ export function ShiftCard({ shift, member, isMine, canEdit, showName = true }: P
           </span>
           <span className="text-xs text-muted-foreground tabular-nums">{duration}</span>
         </span>
-        {showName && (
-          <span className="truncate text-sm">
-            {name}
-            {isMine && <span className="ml-1.5 text-xs font-semibold text-primary">(tu)</span>}
-          </span>
-        )}
+        <span className="truncate text-sm">
+          {name}
+          {isMine && <span className="ml-1.5 text-xs font-semibold text-primary">(tu)</span>}
+        </span>
         {shift.note && <span className="truncate text-xs text-muted-foreground">{shift.note}</span>}
       </span>
       {canEdit && <ChevronRightIcon className="size-4 shrink-0 text-muted-foreground" aria-hidden />}

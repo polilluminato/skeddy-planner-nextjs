@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BellIcon, CalendarDaysIcon, UserRoundIcon, UsersRoundIcon } from "lucide-react";
+import { Logo } from "@/components/common/logo";
 import { cn } from "@/lib/utils";
 
 const ITEMS = [
@@ -12,16 +13,26 @@ const ITEMS = [
   { href: "/profile", label: "Profilo", icon: UserRoundIcon, adminOnly: false },
 ];
 
-export function BottomNav({ isAdmin, unread }: { isAdmin: boolean; unread: number }) {
+/**
+ * Navigazione principale: bottom nav su mobile; per gli admin, da desktop,
+ * diventa una sidebar a sinistra (variante `desktop:`, vedi `app/globals.css`).
+ */
+export function AppNav({ isAdmin, unread }: { isAdmin: boolean; unread: number }) {
   const pathname = usePathname();
   const items = ITEMS.filter((item) => isAdmin || !item.adminOnly);
 
   return (
     <nav
       aria-label="Navigazione principale"
-      className="fixed inset-x-0 bottom-0 z-30 border-t bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur supports-[backdrop-filter]:bg-background/80"
+      className={cn(
+        "fixed inset-x-0 bottom-0 z-30 border-t bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur supports-[backdrop-filter]:bg-background/80",
+        "desktop:inset-y-0 desktop:right-auto desktop:w-60 desktop:border-t-0 desktop:border-r desktop:pt-[env(safe-area-inset-top)] desktop:pb-4",
+      )}
     >
-      <ul className="mx-auto flex max-w-2xl">
+      <Link href="/calendar" className="hidden h-14 items-center px-5 desktop:flex">
+        <Logo />
+      </Link>
+      <ul className="mx-auto flex max-w-2xl desktop:mt-2 desktop:flex-col desktop:gap-1 desktop:px-3">
         {items.map(({ href, label, icon: Icon }) => {
           const active = pathname === href || pathname.startsWith(`${href}/`);
           // Sulla pagina delle notifiche i messaggi si stanno leggendo: niente badge.
@@ -34,7 +45,10 @@ export function BottomNav({ isAdmin, unread }: { isAdmin: boolean; unread: numbe
                 aria-label={badge ? `${label}, ${badge} non ${badge === 1 ? "letta" : "lette"}` : undefined}
                 className={cn(
                   "flex min-h-14 flex-col items-center justify-center gap-0.5 text-xs font-medium transition-colors",
-                  active ? "text-primary" : "text-muted-foreground hover:text-foreground",
+                  "desktop:min-h-11 desktop:flex-row desktop:justify-start desktop:gap-3 desktop:rounded-lg desktop:px-3 desktop:text-sm",
+                  active
+                    ? "text-primary desktop:bg-primary/10"
+                    : "text-muted-foreground hover:text-foreground desktop:hover:bg-accent",
                 )}
               >
                 <span className="relative">

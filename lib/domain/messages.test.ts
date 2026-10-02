@@ -23,7 +23,7 @@ describe("buildTimeline", () => {
         msg("c", "2026-10-02T07:15:00Z"),
         msg("d", "2026-10-02T08:00:00Z", null),
       ],
-      { meId: "u1", timeZone: "Europe/Rome", now },
+      { meId: "u1", now },
     );
     expect(items.map((i) => (i.kind === "day" ? i.label : i.id))).toEqual([
       "Martedì 29 settembre",
@@ -39,7 +39,6 @@ describe("buildTimeline", () => {
   it("descrive ogni messaggio", () => {
     const [, a, , b] = buildTimeline([msg("a", "2026-10-02T07:15:00Z"), msg("b", "2026-10-03T07:15:00Z", null)], {
       meId: "u1",
-      timeZone: "Europe/Rome",
       now,
     });
     expect(a).toMatchObject({ time: "09:15", authorName: "Ada Rossi", authorColor: "#5645d4", mine: true });

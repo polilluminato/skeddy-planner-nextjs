@@ -1,7 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { SESSION_COOKIE } from "@/config/app";
+import { SESSION_COOKIE, SESSION_DAYS } from "@/config/app";
 
-const SESSION_DAYS = 30;
 const PUBLIC_PATHS = ["/login", "/signup", "/admin/login"];
 
 /**

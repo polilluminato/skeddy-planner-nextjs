@@ -4,12 +4,12 @@ import { redirect } from "next/navigation";
 import { colorForIndex } from "@/config/colors";
 import { firstError, type ActionState } from "@/lib/action-state";
 import { newPersonalCode, hashPersonalCode } from "@/lib/auth/codes";
+import { generateCompanyCode } from "@/lib/auth/crypto";
 import { hashPassword, verifyPassword } from "@/lib/auth/password";
 import { clearAttempts, lockMessage, registerFailure } from "@/lib/auth/rate-limit";
 import { createSession, destroySession } from "@/lib/auth/session";
 import { checkSuperAdmin } from "@/lib/auth/superadmin";
 import { retryOnUnique } from "@/lib/db-errors";
-import { generateCompanyCode } from "@/lib/domain/company-code";
 import { prisma } from "@/lib/prisma";
 import { codeLoginSchema, emailLoginSchema, signupSchema } from "@/lib/validation/auth";
 

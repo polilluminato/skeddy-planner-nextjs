@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   findOverlap,
+  minuteOptions,
   formatMinutes,
   isValidRange,
   minutesToHoursInput,
@@ -8,7 +9,6 @@ import {
   rangesOverlap,
   shiftMinutes,
   sortByStart,
-  totalMinutes,
   weeklyStatus,
 } from "./shifts";
 
@@ -23,7 +23,6 @@ describe("shifts", () => {
 
   it("calcola la durata", () => {
     expect(shiftMinutes({ start: "08:15", end: "12:45" })).toBe(270);
-    expect(totalMinutes([{ start: "08:00", end: "12:00" }, { start: "14:00", end: "18:30" }])).toBe(510);
   });
 
   it("considera adiacenti i turni che si toccano", () => {
@@ -64,5 +63,12 @@ describe("shifts", () => {
     expect(parseHours("200")).toBeNull();
     expect(minutesToHoursInput(2250)).toBe("37,5");
     expect(minutesToHoursInput(2400)).toBe("40");
+  });
+
+  it("elenca i minuti selezionabili includendo quello corrente", () => {
+    expect(minuteOptions(15)).toEqual([0, 15, 30, 45]);
+    expect(minuteOptions(5)).toHaveLength(12);
+    expect(minuteOptions(15, 20)).toEqual([0, 15, 20, 30, 45]);
+    expect(minuteOptions(15, 30)).toEqual([0, 15, 30, 45]);
   });
 });

@@ -26,7 +26,7 @@ export default async function ProfilePage() {
   return (
     <>
       <AppHeader title="Profilo" subtitle={company.name} />
-      <main className="mx-auto grid max-w-2xl gap-5 px-4 py-4">
+      <main className="mx-auto grid max-w-2xl gap-5 px-4 py-4 desktop:max-w-none desktop:px-8 desktop:py-6 desktop:lg:grid-cols-2 desktop:lg:items-start">
         <section aria-labelledby="me-title" className="grid gap-3 rounded-xl border bg-card p-4">
           <div className="flex items-start gap-3">
             <span className="mt-1.5 size-4 shrink-0 rounded-full" style={{ background: user.color }} aria-hidden />
@@ -67,7 +67,7 @@ export default async function ProfilePage() {
           </section>
         )}
 
-        <form action={logout}>
+        <form action={logout} className="desktop:lg:col-span-2">
           <Button type="submit" variant="ghost" className="h-11 w-full text-base text-destructive">
             <LogOutIcon aria-hidden />
             Esci

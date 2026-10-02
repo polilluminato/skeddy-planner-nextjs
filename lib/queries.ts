@@ -2,7 +2,7 @@ import "server-only";
 import { fromUTCDate, toUTCDate, type ISODate } from "@/lib/domain/dates";
 import { prisma } from "@/lib/prisma";
 
-export const memberSelect = {
+const memberSelect = {
   id: true,
   firstName: true,
   lastName: true,
@@ -21,12 +21,6 @@ export function getTeam(companyId: string) {
   });
 }
 
-export type TeamMember = Awaited<ReturnType<typeof getTeam>>[number];
-
-export function getMember(companyId: string, id: string) {
-  return prisma.user.findFirst({ where: { id, companyId }, select: memberSelect });
-}
-
 export async function getShifts(companyId: string, from: ISODate, to: ISODate, userId?: string) {
   const rows = await prisma.shift.findMany({
     where: { companyId, date: { gte: toUTCDate(from), lte: toUTCDate(to) }, ...(userId ? { userId } : {}) },
@@ -35,8 +29,6 @@ export async function getShifts(companyId: string, from: ISODate, to: ISODate, u
   });
   return rows.map((s) => ({ ...s, date: fromUTCDate(s.date) }));
 }
-
-export type ShiftItem = Awaited<ReturnType<typeof getShifts>>[number];
 
 export function getCompaniesOverview() {
   return prisma.company.findMany({

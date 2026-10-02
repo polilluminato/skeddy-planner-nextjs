@@ -15,7 +15,7 @@ describe("format", () => {
   });
 
   it("formatta l'ora nel fuso indicato", () => {
-    expect(formatClock(new Date("2026-10-02T12:05:00Z"), "Europe/Rome")).toBe("14:05");
-    expect(formatClock(new Date("2026-01-15T23:30:00Z"), "Europe/Rome")).toBe("00:30");
+    expect(formatClock(new Date("2026-10-02T12:05:00Z"))).toBe("14:05");
+    expect(formatClock(new Date("2026-01-15T23:30:00Z"))).toBe("00:30");
   });
 });

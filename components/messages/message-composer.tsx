@@ -11,7 +11,7 @@ import { useFormAction } from "@/hooks/use-form-action";
 
 const COUNTER_FROM = MAX_MESSAGE_LENGTH - 100;
 
-/** Barra di scrittura per gli amministratori, fissata sopra la navigazione. */
+/** Barra di scrittura per gli amministratori, fissata sopra la navigazione (in fondo su desktop). */
 export function MessageComposer() {
   const [text, setText] = useState("");
   const { state, onSubmit, pending } = useFormAction(async (prev, formData) => {
@@ -22,7 +22,7 @@ export function MessageComposer() {
   const empty = text.trim() === "";
 
   return (
-    <div className="sticky bottom-[calc(3.5rem+env(safe-area-inset-bottom))] z-20 border-t bg-background/95 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+    <div className="sticky bottom-[calc(3.5rem+env(safe-area-inset-bottom))] z-20 border-t bg-background/95 px-4 py-3 desktop:bottom-0 desktop:px-8 backdrop-blur supports-[backdrop-filter]:bg-background/80">
       <form onSubmit={onSubmit} className="grid gap-2">
         <FormError message={state.error} />
         <div className="flex items-end gap-2">

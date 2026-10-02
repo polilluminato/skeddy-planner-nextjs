@@ -34,12 +34,18 @@ export function findOverlap<T extends ShiftLike>(
   return existing.find((s) => s.id !== candidate.id && rangesOverlap(candidate, s));
 }
 
-export function totalMinutes(shifts: readonly TimeRange[]): number {
-  return shifts.reduce((sum, s) => sum + shiftMinutes(s), 0);
-}
-
 export function sortByStart<T extends TimeRange>(shifts: readonly T[]): T[] {
   return [...shifts].sort((a, b) => a.start.localeCompare(b.start) || a.end.localeCompare(b.end));
+}
+
+/** Minuti selezionabili (0, step, 2·step…), più quello corrente se non è sul passo. */
+export function minuteOptions(step: number, current?: number): number[] {
+  const options = Array.from({ length: Math.ceil(60 / step) }, (_, i) => i * step);
+  if (current !== undefined && current >= 0 && current < 60 && !options.includes(current)) {
+    options.push(current);
+    options.sort((a, b) => a - b);
+  }
+  return options;
 }
 
 export type WeeklyStatus = "unset" | "under" | "ok" | "over";

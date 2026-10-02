@@ -5,7 +5,6 @@ import { MAX_ADMINS } from "@/config/app";
 import { firstError, type ActionState } from "@/lib/action-state";
 import { newPersonalCode } from "@/lib/auth/codes";
 import { requireAdmin } from "@/lib/auth/guards";
-import { destroyUserSessions } from "@/lib/auth/session";
 import { retryOnUnique } from "@/lib/db-errors";
 import { prisma } from "@/lib/prisma";
 import { employeeSchema } from "@/lib/validation/employee";
@@ -109,7 +108,7 @@ export async function regenerateCode(employeeId: string): Promise<CodeResult> {
     return code;
   });
   // Il vecchio codice potrebbe essere in mano ad altri: chiude le sessioni aperte (tranne la propria).
-  if (target.id !== user.id) await destroyUserSessions(target.id);
+  if (target.id !== user.id) await prisma.session.deleteMany({ where: { userId: target.id } });
 
   return { ok: true, personalCode, name: `${target.firstName} ${target.lastName}` };
 }

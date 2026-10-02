@@ -22,15 +22,8 @@ import { EmployeeFields } from "./employee-fields";
 
 export function CreateEmployee({ companyCode }: { companyCode: string }) {
   const [open, setOpen] = useState(false);
-  const [formKey, setFormKey] = useState(0);
-
-  function onOpenChange(next: boolean) {
-    setOpen(next);
-    if (!next) setFormKey((k) => k + 1); // alla chiusura riparte da un form vuoto
-  }
-
   return (
-    <Drawer open={open} onOpenChange={onOpenChange}>
+    <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>
         <Button className="h-11 text-base">
           <PlusIcon className="size-5" aria-hidden />
@@ -38,7 +31,8 @@ export function CreateEmployee({ companyCode }: { companyCode: string }) {
         </Button>
       </DrawerTrigger>
       <DrawerContent>
-        <CreateForm key={formKey} companyCode={companyCode} onClose={() => onOpenChange(false)} />
+        {/* Montato solo da aperto: a ogni apertura riparte da un form vuoto. */}
+        {open && <CreateForm companyCode={companyCode} onClose={() => setOpen(false)} />}
       </DrawerContent>
     </Drawer>
   );

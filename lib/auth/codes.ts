@@ -1,6 +1,5 @@
 import "server-only";
-import { generatePersonalCode } from "@/lib/domain/personal-code";
-import { hmacCode } from "./crypto";
+import { generatePersonalCode, hmacCode } from "./crypto";
 
 function authSecret(): string {
   const secret = process.env.AUTH_SECRET;

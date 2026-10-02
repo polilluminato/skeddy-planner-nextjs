@@ -1,11 +1,6 @@
 import { describe, expect, it } from "vitest";
-import {
-  formatPersonalCode,
-  generatePersonalCode,
-  isValidPersonalCode,
-  normalizePersonalCode,
-  PERSONAL_CODE_ALPHABET,
-} from "./personal-code";
+import { generatePersonalCode } from "@/lib/auth/crypto";
+import { formatPersonalCode, isValidPersonalCode, normalizePersonalCode, PERSONAL_CODE_ALPHABET } from "./personal-code";
 
 describe("personal code", () => {
   it("genera 8 caratteri maiuscoli alfanumerici non ambigui", () => {

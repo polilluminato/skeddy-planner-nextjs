@@ -1,4 +1,4 @@
-import { APP_LOCALE } from "@/config/app";
+import { APP_LOCALE, APP_TIME_ZONE } from "@/config/app";
 import { addDays, startOfWeek, toUTCDate, type ISODate } from "./dates";
 
 // Le date ISO sono mezzanotte UTC: si formattano in UTC per non cambiare giorno.
@@ -44,14 +44,14 @@ export function weekdayLabels(): string[] {
   return Array.from({ length: 7 }, (_, i) => formatShortWeekday(addDays(monday, i)));
 }
 
-const clocks = new Map<string, Intl.DateTimeFormat>();
+const clock = new Intl.DateTimeFormat(APP_LOCALE, {
+  timeZone: APP_TIME_ZONE,
+  hour: "2-digit",
+  minute: "2-digit",
+  hourCycle: "h23",
+});
 
-/** "14:05" nel fuso indicato (per istanti reali, non per date ISO). */
-export function formatClock(date: Date, timeZone: string): string {
-  let clock = clocks.get(timeZone);
-  if (!clock) {
-    clock = new Intl.DateTimeFormat(APP_LOCALE, { timeZone, hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
-    clocks.set(timeZone, clock);
-  }
+/** "14:05" nel fuso dell'app (per istanti reali, non per date ISO). */
+export function formatClock(date: Date): string {
   return clock.format(date);
 }

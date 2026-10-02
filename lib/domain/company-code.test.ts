@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { BIP39_IT } from "@/config/bip39-it";
-import { generateCompanyCode, isValidCompanyCode, normalizeCompanyCode } from "./company-code";
+import { generateCompanyCode } from "@/lib/auth/crypto";
+import { normalizeCompanyCode } from "./company-code";
 
 describe("company code", () => {
   it("usa la wordlist completa", () => {
@@ -8,20 +9,15 @@ describe("company code", () => {
     expect(new Set(BIP39_IT).size).toBe(2048);
   });
 
-  it("genera 4 parole valide separate da trattino", () => {
+  it("genera 4 parole della wordlist separate da trattino", () => {
     for (let i = 0; i < 50; i++) {
-      const code = generateCompanyCode();
-      expect(code.split("-")).toHaveLength(4);
-      expect(isValidCompanyCode(code)).toBe(true);
+      const words = generateCompanyCode().split("-");
+      expect(words).toHaveLength(4);
+      for (const w of words) expect(BIP39_IT).toContain(w);
     }
   });
 
   it("normalizza maiuscole, spazi e separatori", () => {
     expect(normalizeCompanyCode("  Abaco  Zuppa-ZINCO.acqua ")).toBe("abaco-zuppa-zinco-acqua");
-  });
-
-  it("rifiuta codici malformati", () => {
-    expect(isValidCompanyCode("abaco-zuppa-zinco")).toBe(false);
-    expect(isValidCompanyCode("abaco-zuppa-zinco-parolainventata")).toBe(false);
   });
 });

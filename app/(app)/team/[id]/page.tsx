@@ -45,16 +45,19 @@ export default async function MemberPage({ params, searchParams }: PageProps<"/t
     <>
       <AppHeader title={name} subtitle="Dipendente" />
       <ShiftEditorProvider members={team}>
-        <main className="mx-auto grid max-w-2xl gap-5 px-4 py-4">
+        <main className="mx-auto grid max-w-2xl gap-5 px-4 py-4 desktop:max-w-none desktop:px-8 desktop:py-6 desktop:lg:grid-cols-3 desktop:lg:items-start">
           <Link
             href="/team"
-            className="-ml-1 flex h-11 w-fit items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground"
+            className="-ml-1 flex h-11 w-fit items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground desktop:lg:col-span-3"
           >
             <ChevronLeftIcon className="size-4" aria-hidden />
             Team
           </Link>
 
-          <section aria-labelledby="member-title" className="grid gap-4 rounded-xl border bg-card p-4">
+          <section
+            aria-labelledby="member-title"
+            className="grid gap-4 rounded-xl border bg-card p-4 desktop:lg:col-start-1"
+          >
             <div className="flex items-start gap-3">
               <span className="mt-1.5 size-4 shrink-0 rounded-full" style={{ background: member.color }} aria-hidden />
               <div className="grid min-w-0 flex-1 gap-1">
@@ -91,7 +94,10 @@ export default async function MemberPage({ params, searchParams }: PageProps<"/t
             </div>
           </section>
 
-          <section aria-labelledby="week-title" className="grid gap-3">
+          <section
+            aria-labelledby="week-title"
+            className="grid gap-3 desktop:lg:col-span-2 desktop:lg:col-start-2 desktop:lg:row-span-2 desktop:lg:row-start-2"
+          >
             <div className="flex items-center gap-1">
               <Button asChild variant="ghost" size="icon" className="size-11">
                 <Link href={weekHref(addDays(weekStart, -7))} aria-label="Settimana precedente">
@@ -108,22 +114,27 @@ export default async function MemberPage({ params, searchParams }: PageProps<"/t
               </Button>
             </div>
             <HoursSummary rows={hoursSummary([member], shifts)} members={members} title="Ore pianificate" />
-            {weekDays(weekStart).map((day) => (
-              <DaySection
-                key={day}
-                date={day}
-                title={formatLongDay(day)}
-                isToday={day === today}
-                shifts={byDate.get(day) ?? []}
-                members={members}
-                currentUserId={user.id}
-                canEdit
-                defaultUserId={member.id}
-              />
-            ))}
+            <div className="grid gap-3 desktop:grid-cols-[repeat(auto-fill,minmax(min(16rem,100%),1fr))]">
+              {weekDays(weekStart).map((day) => (
+                <DaySection
+                  key={day}
+                  date={day}
+                  title={formatLongDay(day)}
+                  isToday={day === today}
+                  shifts={byDate.get(day) ?? []}
+                  members={members}
+                  currentUserId={user.id}
+                  canEdit
+                  defaultUserId={member.id}
+                />
+              ))}
+            </div>
           </section>
 
-          <section aria-labelledby="actions-title" className="grid gap-2 rounded-xl border bg-card p-4">
+          <section
+            aria-labelledby="actions-title"
+            className="grid gap-2 rounded-xl border bg-card p-4 desktop:lg:col-start-1"
+          >
             <h2 id="actions-title" className="mb-1 font-semibold">
               Accesso e permessi
             </h2>

@@ -14,7 +14,7 @@ export function ShiftList({ shifts, members, currentUserId, canEdit }: DayListPr
     return <p className="py-1 text-sm text-muted-foreground">Nessun turno</p>;
   }
   return (
-    <ul className="grid gap-2">
+    <ul className="grid gap-2 desktop:grid-cols-[repeat(auto-fill,minmax(min(16rem,100%),1fr))]">
       {shifts.map((shift) => {
         const member = members.get(shift.userId);
         if (!member) return null;

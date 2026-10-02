@@ -94,7 +94,7 @@ export function MessageThread({ items, firstUnreadId, olderHref, isAdmin }: Prop
   }
 
   return (
-    <main className="flex flex-1 flex-col justify-end gap-3 px-4 py-4">
+    <main className="flex flex-1 flex-col justify-end gap-3 px-4 py-4 desktop:px-8">
       <h1 className="sr-only">Notifiche</h1>
       {olderHref && (
         <Link
@@ -157,7 +157,7 @@ function MessageBubble({
           {item.time}
         </time>
       </p>
-      <div className={cn("flex max-w-[85%] items-end gap-1", item.mine && "flex-row-reverse")}>
+      <div className={cn("flex max-w-[85%] items-end gap-1 desktop:max-w-[min(85%,42rem)]", item.mine && "flex-row-reverse")}>
         <p
           className={cn(
             "min-w-0 rounded-2xl px-3.5 py-2.5 break-words whitespace-pre-wrap",

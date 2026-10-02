@@ -6,10 +6,6 @@ import { requireAdmin, requireUser } from "@/lib/auth/guards";
 import { prisma } from "@/lib/prisma";
 import { messageSchema } from "@/lib/validation/message";
 
-function revalidateMessages() {
-  revalidatePath("/messages");
-}
-
 export async function sendMessage(_prev: ActionState, formData: FormData): Promise<ActionState> {
   const { companyId, user } = await requireAdmin();
   const parsed = messageSchema.safeParse(Object.fromEntries(formData));
@@ -24,7 +20,7 @@ export async function sendMessage(_prev: ActionState, formData: FormData): Promi
     await tx.user.updateMany({ where: { id: user.id, companyId }, data: { messagesReadAt: message.createdAt } });
   });
 
-  revalidateMessages();
+  revalidatePath("/messages");
   return { ok: true };
 }
 
@@ -32,7 +28,7 @@ export async function deleteMessage(messageId: string): Promise<ActionState> {
   const { companyId } = await requireAdmin();
   const { count } = await prisma.message.deleteMany({ where: { id: messageId, companyId } });
   if (count === 0) return { error: "Messaggio non trovato." };
-  revalidateMessages();
+  revalidatePath("/messages");
   return { ok: true };
 }
 

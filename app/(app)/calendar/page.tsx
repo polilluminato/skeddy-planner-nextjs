@@ -7,14 +7,18 @@ import { MonthView } from "@/components/calendar/month-view";
 import { ShiftEditorProvider } from "@/components/calendar/shift-editor";
 import { CalendarToolbar } from "@/components/calendar/toolbar";
 import type { CalendarMember } from "@/components/calendar/types";
+import { TeamHours } from "@/components/calendar/team-hours";
+import { TimeGrid } from "@/components/calendar/time-grid";
 import { WeekView } from "@/components/calendar/week-view";
 import { AppHeader } from "@/components/nav/app-header";
 import { APP_TIME_ZONE } from "@/config/app";
 import { requireUser } from "@/lib/auth/guards";
 import { calendarHref, parseCalendarState, visibleRange } from "@/lib/domain/calendar";
-import { todayISO } from "@/lib/domain/dates";
-import { formatLongDay } from "@/lib/domain/format";
+import { addDays, startOfWeek, todayISO, weekDays } from "@/lib/domain/dates";
+import { formatClock, formatLongDay, formatWeekRange } from "@/lib/domain/format";
 import { groupByDate, hoursSummary } from "@/lib/domain/schedule";
+import { timeToMinutes } from "@/lib/domain/shifts";
+import { visibleHours } from "@/lib/domain/time-grid";
 import { getShifts, getTeam } from "@/lib/queries";
 import { cn } from "@/lib/utils";
 
@@ -29,7 +33,14 @@ export default async function CalendarPage({ searchParams }: PageProps<"/calenda
   const extraParams = onlyMine ? "&mine=1" : "";
 
   const range = visibleRange(state);
-  const [team, allShifts] = await Promise.all([getTeam(companyId), getShifts(companyId, range.from, range.to)]);
+  // Le card del team (desktop) contano le ore della settimana della data scelta, anche nelle viste giorno e mese.
+  const week = { from: startOfWeek(state.date), to: addDays(startOfWeek(state.date), 6) };
+  const [team, loadedShifts] = await Promise.all([
+    getTeam(companyId),
+    getShifts(companyId, range.from < week.from ? range.from : week.from, range.to > week.to ? range.to : week.to),
+  ]);
+  const inRange = (from: string, to: string) => loadedShifts.filter((s) => s.date >= from && s.date <= to);
+  const allShifts = inRange(range.from, range.to);
 
   const members = new Map<string, CalendarMember>(team.map((m) => [m.id, m]));
   const shifts = onlyMine ? allShifts.filter((s) => s.userId === user.id) : allShifts;
@@ -42,47 +53,86 @@ export default async function CalendarPage({ searchParams }: PageProps<"/calenda
 
   const filterHref = (mine: boolean) => calendarHref(state) + (mine ? "&mine=1" : "");
 
+  // Vista desktop degli admin: card ore del team + griglia oraria per giorno e settimana.
+  const gridDays = state.view === "week" ? weekDays(state.date) : [state.date];
+  const timeGrid = isAdmin && state.view !== "month" && (
+    <TimeGrid
+      days={gridDays}
+      today={today}
+      hours={visibleHours(shifts)}
+      shifts={shifts}
+      members={team.map(({ id, firstName, lastName, color }) => ({ id, firstName, lastName, color }))}
+      currentUserId={user.id}
+      canEdit
+      nowMinutes={timeToMinutes(formatClock(new Date()))}
+      extraParams={extraParams}
+    />
+  );
+
   const content = (
-    <main className="mx-auto grid max-w-2xl gap-4 px-4 py-4">
+    <main className="mx-auto grid max-w-2xl gap-4 px-4 py-4 desktop:max-w-none desktop:px-8 desktop:py-6">
       <h1 className="sr-only">Calendario turni</h1>
-      <CalendarToolbar state={state} today={today} extraParams={extraParams} />
-
-      <nav aria-label="Filtro turni" className="flex gap-2">
-        {[
-          { mine: false, label: "Tutti" },
-          { mine: true, label: "Solo i miei" },
-        ].map(({ mine, label }) => (
-          <Link
-            key={label}
-            href={filterHref(mine)}
-            aria-current={onlyMine === mine ? "page" : undefined}
-            className={cn(
-              "flex h-9 items-center rounded-full border px-4 text-sm font-medium transition-colors",
-              onlyMine === mine
-                ? "border-primary bg-primary/10 text-primary"
-                : "text-muted-foreground hover:text-foreground",
-            )}
-          >
-            {label}
-          </Link>
-        ))}
-      </nav>
-
-      {state.view === "week" && <WeekView date={state.date} today={today} byDate={byDate} {...listProps} />}
-      {state.view === "day" && (
-        <DaySection
-          date={state.date}
-          title={formatLongDay(state.date)}
-          isToday={state.date === today}
-          shifts={byDate.get(state.date) ?? []}
-          {...listProps}
+      {isAdmin && (
+        <TeamHours
+          rows={hoursSummary(team, inRange(week.from, week.to))}
+          members={members}
+          title={`Ore assegnate · ${formatWeekRange(week.from)}`}
+          className="hidden desktop:block"
         />
       )}
+      {isAdmin && (
+        <h2 className="hidden pt-2 text-xl font-semibold tracking-tight desktop:block" aria-hidden>
+          Calendario
+        </h2>
+      )}
+      <div className="grid gap-4 desktop:flex desktop:items-center desktop:gap-6">
+        <div className="desktop:flex-1">
+          <CalendarToolbar state={state} today={today} extraParams={extraParams} />
+        </div>
+
+        <nav aria-label="Filtro turni" className="flex gap-2">
+          {[
+            { mine: false, label: "Tutti" },
+            { mine: true, label: "Solo i miei" },
+          ].map(({ mine, label }) => (
+            <Link
+              key={label}
+              href={filterHref(mine)}
+              aria-current={onlyMine === mine ? "page" : undefined}
+              className={cn(
+                "flex h-9 items-center rounded-full border px-4 text-sm font-medium transition-colors",
+                onlyMine === mine
+                  ? "border-primary bg-primary/10 text-primary"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              {label}
+            </Link>
+          ))}
+        </nav>
+      </div>
+
       {state.view === "month" && (
         <MonthView date={state.date} today={today} byDate={byDate} members={members} extraParams={extraParams} />
       )}
+      {timeGrid && <div className="hidden desktop:block">{timeGrid}</div>}
+      {/* Su mobile (e per i dipendenti) giorno e settimana restano a elenco. */}
+      {state.view !== "month" && (
+        <div className={cn("grid gap-4", timeGrid && "desktop:hidden")}>
+          {state.view === "week" && <WeekView date={state.date} today={today} byDate={byDate} {...listProps} />}
+          {state.view === "day" && (
+            <DaySection
+              date={state.date}
+              title={formatLongDay(state.date)}
+              isToday={state.date === today}
+              shifts={byDate.get(state.date) ?? []}
+              {...listProps}
+            />
+          )}
 
-      {summary.length > 0 && <HoursSummary rows={summary} members={members} />}
+          {summary.length > 0 && <HoursSummary rows={summary} members={members} />}
+        </div>
+      )}
 
       {isAdmin && <AddShiftButton date={state.view === "month" ? today : state.date} variant="fab" />}
       {isAdmin && <div className="h-16" aria-hidden />}

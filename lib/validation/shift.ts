@@ -19,5 +19,3 @@ export const shiftSchema = z
       .transform((v) => (v ? v : null)),
   })
   .refine(isValidRange, { message: "L'ora di fine deve essere successiva all'inizio.", path: ["end"] });
-
-export type ShiftInput = z.infer<typeof shiftSchema>;
