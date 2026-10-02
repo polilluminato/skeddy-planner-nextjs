@@ -4,6 +4,7 @@ import { createContext, useContext, useState, useTransition } from "react";
 import { Trash2Icon } from "lucide-react";
 import { toast } from "sonner";
 import { deleteShift, saveShift } from "@/actions/shifts";
+import { DateField } from "@/components/common/date-field";
 import { FormError } from "@/components/common/form-error";
 import { SubmitButton } from "@/components/common/submit-button";
 import { TimeField } from "@/components/common/time-field";
@@ -16,7 +17,6 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useFormAction } from "@/hooks/use-form-action";
@@ -120,14 +120,7 @@ function ShiftForm({ draft, members, onDone }: { draft: Draft; members: Calendar
 
         <div className="grid gap-1.5">
           <Label htmlFor="shift-date">Giorno</Label>
-          <Input
-            id="shift-date"
-            name="date"
-            type="date"
-            defaultValue={editing?.date ?? draft.date}
-            required
-            className="h-11 text-base md:text-base"
-          />
+          <DateField id="shift-date" name="date" defaultValue={editing?.date ?? draft.date} />
         </div>
 
         <div className="grid grid-cols-2 gap-3">

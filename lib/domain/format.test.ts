@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { dayOfMonth, formatClock, formatLongDay, formatMonthYear, formatShortWeekday, formatWeekRange, weekdayLabels } from "./format";
+import { dayOfMonth, formatClock, formatNumericDate, formatLongDay, formatMonthYear, formatShortWeekday, formatWeekRange, weekdayLabels } from "./format";
 
 describe("format", () => {
   it("formatta in italiano senza slittare di giorno", () => {
@@ -15,6 +15,7 @@ describe("format", () => {
   });
 
   it("formatta l'ora nel fuso indicato", () => {
+    expect(formatNumericDate("2026-10-02")).toBe("02/10/2026");
     expect(formatClock(new Date("2026-10-02T12:05:00Z"))).toBe("14:05");
     expect(formatClock(new Date("2026-01-15T23:30:00Z"))).toBe("00:30");
   });

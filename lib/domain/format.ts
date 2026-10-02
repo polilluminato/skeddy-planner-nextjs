@@ -10,6 +10,7 @@ const shortWeekday = fmt({ weekday: "short" });
 const dayMonth = fmt({ day: "numeric", month: "short" });
 const dayMonthYear = fmt({ day: "numeric", month: "short", year: "numeric" });
 const monthYear = fmt({ month: "long", year: "numeric" });
+const numericDate = fmt({ day: "2-digit", month: "2-digit", year: "numeric" });
 
 const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
@@ -21,6 +22,11 @@ export function formatLongDay(iso: ISODate): string {
 /** "mer" */
 export function formatShortWeekday(iso: ISODate): string {
   return shortWeekday.format(toUTCDate(iso)).replace(".", "");
+}
+
+/** "02/10/2026" */
+export function formatNumericDate(iso: ISODate): string {
+  return numericDate.format(toUTCDate(iso));
 }
 
 /** "Settembre 2026" */
