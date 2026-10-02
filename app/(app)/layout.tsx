@@ -17,7 +17,7 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
     >
       {children}
       <AppNav isAdmin={isAdmin} unread={unread} defaultCollapsed={collapsed} />
-      {/* Riaprendo la PWA si riprendono turni e notifiche non lette. */}
+      {/* Riaprendo la PWA si riprendono turni e messaggi non letti. */}
       <AutoRefresh onVisible />
     </div>
   );

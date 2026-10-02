@@ -8,7 +8,7 @@ import { requireUser } from "@/lib/auth/guards";
 import { buildTimeline, firstUnreadId, parseMessageLimit } from "@/lib/domain/messages";
 import { getMessages } from "@/lib/queries";
 
-export const metadata: Metadata = { title: "Notifiche" };
+export const metadata: Metadata = { title: "Messaggi" };
 
 export default async function MessagesPage({ searchParams }: PageProps<"/messages">) {
   const { user, company, companyId, isAdmin } = await requireUser();
@@ -17,7 +17,7 @@ export default async function MessagesPage({ searchParams }: PageProps<"/message
 
   return (
     <>
-      <AppHeader title="Notifiche" subtitle={company.name} />
+      <AppHeader title="Messaggi" subtitle={company.name} />
       {/* Altezza del viewport meno header e bottom nav (solo header con la sidebar): pochi messaggi restano in basso, come in una chat. */}
       <div className="mx-auto flex min-h-[calc(100dvh-7rem-env(safe-area-inset-top)-env(safe-area-inset-bottom))] max-w-2xl desktop:min-h-[calc(100dvh-3.5rem-env(safe-area-inset-top))] desktop:max-w-none flex-col">
         <MessageThread

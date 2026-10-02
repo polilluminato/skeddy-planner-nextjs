@@ -66,7 +66,7 @@
   --card-foreground: #37352f;
   --popover: #ffffff;
   --popover-foreground: #37352f;
-  --primary: #5645d4;
+  --primary: #5645d4; /* = BRAND_COLOR in config/app.ts */
   --primary-foreground: #ffffff;
   --secondary: #f6f5f4;
   --secondary-foreground: #37352f;

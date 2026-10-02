@@ -43,10 +43,10 @@ describe("validation", () => {
   });
 
   it("converte le ore settimanali in minuti", () => {
-    const r = employeeSchema.parse({ firstName: "Ada", lastName: "Rossi", weeklyHours: "37,5", color: "#5645d4" });
+    const r = employeeSchema.parse({ firstName: "Ada", lastName: "Rossi", weeklyHours: "37,5", color: "#2f7fd6" });
     expect(r.weeklyHours).toBe(2250);
-    expect(employeeSchema.parse({ firstName: "A", lastName: "B", weeklyHours: "", color: "#5645d4" }).weeklyHours).toBe(0);
-    expect(employeeSchema.safeParse({ firstName: "A", lastName: "B", weeklyHours: "x", color: "#5645d4" }).success).toBe(false);
+    expect(employeeSchema.parse({ firstName: "A", lastName: "B", weeklyHours: "", color: "#2f7fd6" }).weeklyHours).toBe(0);
+    expect(employeeSchema.safeParse({ firstName: "A", lastName: "B", weeklyHours: "x", color: "#2f7fd6" }).success).toBe(false);
     expect(employeeSchema.safeParse({ firstName: "A", lastName: "B", weeklyHours: "1", color: "red" }).success).toBe(false);
   });
 

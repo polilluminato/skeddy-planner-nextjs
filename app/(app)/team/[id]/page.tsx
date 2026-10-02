@@ -23,7 +23,7 @@ import { getShifts, getTeam } from "@/lib/queries";
 export const metadata: Metadata = { title: "Dipendente" };
 
 export default async function MemberPage({ params, searchParams }: PageProps<"/team/[id]">) {
-  const { user, companyId } = await requireAdmin();
+  const { user, company, companyId } = await requireAdmin();
   const { id } = await params;
   const { week } = await searchParams;
   const today = todayISO(APP_TIME_ZONE);
@@ -43,7 +43,7 @@ export default async function MemberPage({ params, searchParams }: PageProps<"/t
 
   return (
     <>
-      <AppHeader title={name} subtitle="Dipendente" />
+      <AppHeader title={name} subtitle={company.name} />
       <ShiftEditorProvider members={team}>
         <main className="mx-auto grid max-w-2xl gap-5 px-4 py-4 desktop:max-w-none desktop:px-8 desktop:py-6 desktop:lg:grid-cols-3 desktop:lg:items-start">
           <Link

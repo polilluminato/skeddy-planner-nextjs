@@ -82,11 +82,6 @@ export default async function CalendarPage({ searchParams }: PageProps<"/calenda
           className="hidden desktop:block"
         />
       )}
-      {isAdmin && (
-        <h2 className="hidden pt-2 text-xl font-semibold tracking-tight desktop:block" aria-hidden>
-          Calendario
-        </h2>
-      )}
       <div className="grid gap-4 desktop:flex desktop:items-center desktop:gap-6">
         <div className="desktop:flex-1">
           <CalendarToolbar state={state} today={today} extraParams={extraParams} />
@@ -143,7 +138,7 @@ export default async function CalendarPage({ searchParams }: PageProps<"/calenda
 
   return (
     <>
-      <AppHeader title={company.name} subtitle={isAdmin ? "Amministratore" : `${user.firstName} ${user.lastName}`}>
+      <AppHeader title="Calendario" subtitle={company.name}>
         {isAdmin && (
           <div className="flex gap-2">
             <Button asChild variant="outline" className="h-11">

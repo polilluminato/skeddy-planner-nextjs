@@ -4,8 +4,8 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  BellIcon,
   CalendarDaysIcon,
+  MessagesSquareIcon,
   PanelLeftCloseIcon,
   PanelLeftOpenIcon,
   UserRoundIcon,
@@ -17,7 +17,7 @@ import { cn } from "@/lib/utils";
 
 const ITEMS = [
   { href: "/calendar", label: "Calendario", icon: CalendarDaysIcon, adminOnly: false },
-  { href: "/messages", label: "Notifiche", icon: BellIcon, adminOnly: false },
+  { href: "/messages", label: "Messaggi", icon: MessagesSquareIcon, adminOnly: false },
   { href: "/team", label: "Team", icon: UsersRoundIcon, adminOnly: true },
   { href: "/profile", label: "Profilo", icon: UserRoundIcon, adminOnly: false },
 ];
@@ -76,14 +76,14 @@ export function AppNav({
       <ul className={cn("mx-auto flex max-w-2xl desktop:mx-0 desktop:mt-2 desktop:max-w-none desktop:flex-col desktop:gap-1", collapsed ? "desktop:px-2" : "desktop:px-3")}>
         {items.map(({ href, label, icon: Icon }) => {
           const active = pathname === href || pathname.startsWith(`${href}/`);
-          // Sulla pagina delle notifiche i messaggi si stanno leggendo: niente badge.
+          // Sulla pagina dei messaggi li si sta leggendo: niente badge.
           const badge = href === "/messages" && !active && unread > 0 ? unread : 0;
           return (
             <li key={href} className="flex-1">
               <Link
                 href={href}
                 aria-current={active ? "page" : undefined}
-                aria-label={badge ? `${label}, ${badge} non ${badge === 1 ? "letta" : "lette"}` : undefined}
+                aria-label={badge ? `${label}, ${badge} non ${badge === 1 ? "letto" : "letti"}` : undefined}
                 title={collapsed ? label : undefined}
                 className={cn(
                   "flex min-h-14 flex-col items-center justify-center gap-0.5 text-xs font-medium transition-colors",

@@ -10,7 +10,7 @@ export default function manifest(): MetadataRoute.Manifest {
     start_url: "/calendar",
     scope: "/",
     display: "standalone",
-    orientation: "portrait",
+    // Splash chiaro come il tema predefinito dell'app (ThemeProvider defaultTheme="light").
     background_color: "#ffffff",
     theme_color: "#ffffff",
     categories: ["business", "productivity"],

@@ -3,7 +3,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { BellIcon, ChevronUpIcon, Trash2Icon } from "lucide-react";
+import { ChevronUpIcon, MessagesSquareIcon, Trash2Icon } from "lucide-react";
 import { deleteMessage, markMessagesRead } from "@/actions/messages";
 import { ConfirmAction } from "@/components/common/confirm-action";
 import { Button } from "@/components/ui/button";
@@ -79,11 +79,11 @@ export function MessageThread({ items, firstUnreadId, olderHref, isAdmin }: Prop
   if (messages.length === 0) {
     return (
       <main className="flex flex-1 flex-col items-center justify-center gap-2 px-4 py-10 text-center">
-        <h1 className="sr-only">Notifiche</h1>
+        <h1 className="sr-only">Messaggi</h1>
         <span className="grid size-12 place-items-center rounded-full bg-muted text-muted-foreground">
-          <BellIcon className="size-6" aria-hidden />
+          <MessagesSquareIcon className="size-6" aria-hidden />
         </span>
-        <p className="font-semibold">Nessuna notifica</p>
+        <p className="font-semibold">Nessun messaggio</p>
         <p className="max-w-xs text-sm text-muted-foreground">
           {isAdmin
             ? "Scrivi il primo messaggio per tutto il team."
@@ -95,7 +95,7 @@ export function MessageThread({ items, firstUnreadId, olderHref, isAdmin }: Prop
 
   return (
     <main className="flex flex-1 flex-col justify-end gap-3 px-4 py-4 desktop:px-8">
-      <h1 className="sr-only">Notifiche</h1>
+      <h1 className="sr-only">Messaggi</h1>
       {olderHref && (
         <Link
           href={olderHref}
