@@ -1,9 +1,18 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BellIcon, CalendarDaysIcon, UserRoundIcon, UsersRoundIcon } from "lucide-react";
+import {
+  BellIcon,
+  CalendarDaysIcon,
+  PanelLeftCloseIcon,
+  PanelLeftOpenIcon,
+  UserRoundIcon,
+  UsersRoundIcon,
+} from "lucide-react";
 import { Logo } from "@/components/common/logo";
+import { SIDEBAR_COOKIE } from "@/config/app";
 import { cn } from "@/lib/utils";
 
 const ITEMS = [
@@ -15,24 +24,56 @@ const ITEMS = [
 
 /**
  * Navigazione principale: bottom nav su mobile; per gli admin, da desktop,
- * diventa una sidebar a sinistra (variante `desktop:`, vedi `app/globals.css`).
+ * diventa una sidebar a sinistra (variante `desktop:`, vedi `app/globals.css`),
+ * comprimibile a sole icone. Lo stato sta in un cookie, letto dal layout al render.
  */
-export function AppNav({ isAdmin, unread }: { isAdmin: boolean; unread: number }) {
+export function AppNav({
+  isAdmin,
+  unread,
+  defaultCollapsed,
+}: {
+  isAdmin: boolean;
+  unread: number;
+  defaultCollapsed: boolean;
+}) {
   const pathname = usePathname();
+  const [collapsed, setCollapsed] = useState(defaultCollapsed);
   const items = ITEMS.filter((item) => isAdmin || !item.adminOnly);
+
+  function toggle() {
+    const next = !collapsed;
+    setCollapsed(next);
+    document.cookie = `${SIDEBAR_COOKIE}=${next ? "collapsed" : ""}; path=/; max-age=31536000; samesite=lax`;
+  }
 
   return (
     <nav
       aria-label="Navigazione principale"
+      // Il layout legge questo attributo con `:has()` per stringere il padding a sinistra.
+      data-sidebar-collapsed={collapsed ? "" : undefined}
       className={cn(
         "fixed inset-x-0 bottom-0 z-30 border-t bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur supports-[backdrop-filter]:bg-background/80",
-        "desktop:inset-y-0 desktop:right-auto desktop:w-60 desktop:border-t-0 desktop:border-r desktop:pt-[env(safe-area-inset-top)] desktop:pb-4",
+        "desktop:inset-y-0 desktop:right-auto desktop:border-t-0 desktop:border-r desktop:pt-[env(safe-area-inset-top)] desktop:pb-4",
+        collapsed ? "desktop:w-16" : "desktop:w-60",
       )}
     >
-      <Link href="/calendar" className="hidden h-14 items-center px-5 desktop:flex">
-        <Logo />
-      </Link>
-      <ul className="mx-auto flex max-w-2xl desktop:mt-2 desktop:flex-col desktop:gap-1 desktop:px-3">
+      <div className={cn("hidden h-14 items-center desktop:flex", collapsed ? "justify-center" : "justify-between pr-2 pl-5")}>
+        {!collapsed && (
+          <Link href="/calendar">
+            <Logo />
+          </Link>
+        )}
+        <button
+          type="button"
+          onClick={toggle}
+          aria-label={collapsed ? "Espandi barra laterale" : "Comprimi barra laterale"}
+          title={collapsed ? "Espandi barra laterale" : "Comprimi barra laterale"}
+          className="grid size-11 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+        >
+          {collapsed ? <PanelLeftOpenIcon className="size-5" aria-hidden /> : <PanelLeftCloseIcon className="size-5" aria-hidden />}
+        </button>
+      </div>
+      <ul className={cn("mx-auto flex max-w-2xl desktop:mx-0 desktop:mt-2 desktop:max-w-none desktop:flex-col desktop:gap-1", collapsed ? "desktop:px-2" : "desktop:px-3")}>
         {items.map(({ href, label, icon: Icon }) => {
           const active = pathname === href || pathname.startsWith(`${href}/`);
           // Sulla pagina delle notifiche i messaggi si stanno leggendo: niente badge.
@@ -43,9 +84,11 @@ export function AppNav({ isAdmin, unread }: { isAdmin: boolean; unread: number }
                 href={href}
                 aria-current={active ? "page" : undefined}
                 aria-label={badge ? `${label}, ${badge} non ${badge === 1 ? "letta" : "lette"}` : undefined}
+                title={collapsed ? label : undefined}
                 className={cn(
                   "flex min-h-14 flex-col items-center justify-center gap-0.5 text-xs font-medium transition-colors",
-                  "desktop:min-h-11 desktop:flex-row desktop:justify-start desktop:gap-3 desktop:rounded-lg desktop:px-3 desktop:text-sm",
+                  "desktop:min-h-11 desktop:flex-row desktop:gap-3 desktop:rounded-lg desktop:px-3 desktop:text-sm",
+                  !collapsed && "desktop:justify-start",
                   active
                     ? "text-primary desktop:bg-primary/10"
                     : "text-muted-foreground hover:text-foreground desktop:hover:bg-accent",
@@ -62,7 +105,7 @@ export function AppNav({ isAdmin, unread }: { isAdmin: boolean; unread: number }
                     </span>
                   )}
                 </span>
-                {label}
+                <span className={cn(collapsed && "desktop:sr-only")}>{label}</span>
               </Link>
             </li>
           );

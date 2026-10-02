@@ -7,6 +7,8 @@ export const APP_TIME_ZONE = "Europe/Rome";
 export const MAX_ADMINS = 3;
 export const SESSION_COOKIE = "skeddy_session";
 export const SESSION_DAYS = 30;
+/** Sidebar desktop compressa a sole icone ("collapsed"); in cookie per evitare il salto al caricamento. */
+export const SIDEBAR_COOKIE = "skeddy_sidebar";
 export const MAX_MESSAGE_LENGTH = 1000;
 /** Messaggi mostrati per pagina nelle notifiche ("Messaggi precedenti" ne aggiunge altrettanti). */
 export const MESSAGES_PAGE_SIZE = 50;

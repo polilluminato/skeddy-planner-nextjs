@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { DownloadIcon, PrinterIcon } from "lucide-react";
 import { AddShiftButton } from "@/components/calendar/add-shift-button";
 import { DaySection } from "@/components/calendar/day-list";
 import { HoursSummary } from "@/components/calendar/hours-summary";
@@ -9,13 +10,14 @@ import { CalendarToolbar } from "@/components/calendar/toolbar";
 import type { CalendarMember } from "@/components/calendar/types";
 import { TeamHours } from "@/components/calendar/team-hours";
 import { TimeGrid } from "@/components/calendar/time-grid";
+import { Button } from "@/components/ui/button";
 import { WeekView } from "@/components/calendar/week-view";
 import { AppHeader } from "@/components/nav/app-header";
 import { APP_TIME_ZONE } from "@/config/app";
 import { requireUser } from "@/lib/auth/guards";
 import { calendarHref, parseCalendarState, visibleRange } from "@/lib/domain/calendar";
 import { addDays, startOfWeek, todayISO, weekDays } from "@/lib/domain/dates";
-import { formatClock, formatLongDay, formatWeekRange } from "@/lib/domain/format";
+import { formatClock, formatLongDay, formatMonthYear, formatWeekRange } from "@/lib/domain/format";
 import { groupByDate, hoursSummary } from "@/lib/domain/schedule";
 import { timeToMinutes } from "@/lib/domain/shifts";
 import { visibleHours } from "@/lib/domain/time-grid";
@@ -141,7 +143,24 @@ export default async function CalendarPage({ searchParams }: PageProps<"/calenda
 
   return (
     <>
-      <AppHeader title={company.name} subtitle={isAdmin ? "Amministratore" : `${user.firstName} ${user.lastName}`} />
+      <AppHeader title={company.name} subtitle={isAdmin ? "Amministratore" : `${user.firstName} ${user.lastName}`}>
+        {isAdmin && (
+          <div className="flex gap-2">
+            <Button asChild variant="outline" className="h-11">
+              <a href={`/calendar/export?month=${state.date.slice(0, 7)}`} download>
+                <DownloadIcon aria-hidden />
+                <span className="sr-only desktop:not-sr-only">CSV {formatMonthYear(state.date)}</span>
+              </a>
+            </Button>
+            <Button asChild variant="outline" className="h-11">
+              <a href={`/print/week?date=${state.date}`} target="_blank">
+                <PrinterIcon aria-hidden />
+                <span className="sr-only desktop:not-sr-only">Stampa settimana</span>
+              </a>
+            </Button>
+          </div>
+        )}
+      </AppHeader>
       {isAdmin ? <ShiftEditorProvider members={team}>{content}</ShiftEditorProvider> : content}
     </>
   );

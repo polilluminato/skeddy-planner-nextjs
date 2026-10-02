@@ -53,7 +53,7 @@ export function TimeField({
         onChange={(e) => setMinute(Number(e.target.value))}
         className={SELECT_CLASS}
       >
-        {minuteOptions(5, minute).map((m) => (
+        {minuteOptions(15, minute).map((m) => (
           <option key={m} value={m}>
             {pad(m)}
           </option>

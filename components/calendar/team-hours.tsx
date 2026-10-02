@@ -21,12 +21,12 @@ export function TeamHours({
       <h2 id="team-hours-title" className="mb-3 text-sm font-medium text-muted-foreground">
         {title}
       </h2>
-      <ul className="grid grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] gap-3">
+      <ul className="flex snap-x gap-3 overflow-x-auto pb-2">
         {rows.map((row) => {
           const member = members.get(row.userId);
           if (!member) return null;
           return (
-            <li key={row.userId}>
+            <li key={row.userId} className="w-60 shrink-0 snap-start">
               <Link
                 href={`/team/${member.id}`}
                 className="grid h-full gap-2 rounded-xl border bg-card p-4 transition-colors hover:bg-accent/60"
