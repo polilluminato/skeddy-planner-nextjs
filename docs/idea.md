@@ -30,6 +30,7 @@ Alcune domande e risposte:
   * Non esiste una settimana tipo, di settimana in settimana un dipendente può fare turni completamente diversi
   * I turni vivono solo nella app, non c'è esportazione (Google Calendar o Apple Calendar) e importazione
   * Non c'è il concetto di notifica push
+  * Sezione "Notifiche": gli amministratori scrivono messaggi per tutta l'azienda, i dipendenti li leggono soltanto. UI a chat con l'ultimo messaggio in basso, badge dei non letti nella navigazione, gli admin possono eliminare un messaggio (non modificarlo)
   * E' una app web mobile come PWA, quindi supportare qualsiasi smartphone
   * Un dipendente e un amministratore possono appartenere ad una sola azienda
   * Funziona solo con la connessione ad internet, non ci sono sincronizzazioni offline

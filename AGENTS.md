@@ -18,5 +18,6 @@ PWA mobile-only per i turni del personale, multi-azienda. Requisiti in `docs/ide
 - Ruoli: `ADMIN` (max 3, `MAX_ADMINS`), `EMPLOYEE`; il fondatore (`isOwner`) non si retrocede né si elimina. Super admin solo da env, sola lettura, area `/admin`.
 - Codice azienda: 4 parole BIP39 italiane (`config/bip39-it.ts`). Codice personale: 8 caratteri senza ambigui, salvato come HMAC-SHA256 con `AUTH_SECRET` (`lib/auth/codes.ts`), mostrato una sola volta.
 - Turni: `date` `@db.Date` gestita come `YYYY-MM-DD`, orari `HH:MM` nello stesso giorno, nessuna sovrapposizione per utente (controllo in transazione).
+- Notifiche (`/messages`): un canale per azienda (`Message`), scrivono ed eliminano solo gli `ADMIN`, i dipendenti leggono; i non letti sono i messaggi dopo `User.messagesReadAt`. Niente push: `AutoRefresh` (`router.refresh()` al ritorno sulla pagina e ogni 60s nella chat).
 - Stile: solo token shadcn (brand Notion in `app/globals.css`), colori dei dipendenti come dati via `style` + `color-mix`; target touch ≥ 44px (`h-11`); non modificare a mano `components/ui/`.
 - Prima di chiudere un cambiamento: `pnpm test`, `pnpm typecheck`, `pnpm lint`, verifica visiva in tema chiaro e scuro.

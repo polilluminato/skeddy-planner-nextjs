@@ -18,28 +18,32 @@ model Company {
   code      String   @unique
   createdAt DateTime @default(now())
 
-  users  User[]
-  shifts Shift[]
+  users    User[]
+  shifts   Shift[]
+  messages Message[]
 }
 
 model User {
-  id            String   @id @default(cuid())
-  companyId     String
-  firstName     String
-  lastName      String
-  role          Role     @default(EMPLOYEE)
-  isOwner       Boolean  @default(false)
-  email         String?  @unique
-  passwordHash  String?
+  id             String   @id @default(cuid())
+  companyId      String
+  firstName      String
+  lastName       String
+  role           Role     @default(EMPLOYEE)
+  isOwner        Boolean  @default(false)
+  email          String?  @unique
+  passwordHash   String?
   /// HMAC-SHA256 del codice personale (AUTH_SECRET come pepper)
-  codeHash      String   @unique
-  weeklyMinutes Int      @default(0)
-  color         String
-  createdAt     DateTime @default(now())
+  codeHash       String   @unique
+  weeklyMinutes  Int      @default(0)
+  color          String
+  /// Ultima apertura delle notifiche: i messaggi successivi sono "non letti"
+  messagesReadAt DateTime @default(now())
+  createdAt      DateTime @default(now())
 
   company  Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
   shifts   Shift[]
   sessions Session[]
+  messages Message[]
 
   @@index([companyId])
 }
@@ -61,6 +65,21 @@ model Shift {
 
   @@index([companyId, date])
   @@index([userId, date])
+}
+
+/// Notifica scritta da un amministratore per tutta l'azienda
+model Message {
+  id        String   @id @default(cuid())
+  companyId String
+  /// null se l'autore è stato eliminato
+  authorId  String?
+  body      String
+  createdAt DateTime @default(now())
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  author  User?   @relation(fields: [authorId], references: [id], onDelete: SetNull)
+
+  @@index([companyId, createdAt])
 }
 
 model Session {

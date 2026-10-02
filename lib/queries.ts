@@ -57,3 +57,23 @@ export function getCompanyForSuperAdmin(id: string) {
     },
   });
 }
+
+/** Ultimi `limit` messaggi dell'azienda, in ordine cronologico. */
+export async function getMessages(companyId: string, limit: number) {
+  const rows = await prisma.message.findMany({
+    where: { companyId },
+    select: {
+      id: true,
+      body: true,
+      createdAt: true,
+      author: { select: { id: true, firstName: true, lastName: true, color: true } },
+    },
+    orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+    take: limit + 1,
+  });
+  return { messages: rows.slice(0, limit).reverse(), hasMore: rows.length > limit };
+}
+
+export function countUnreadMessages(companyId: string, since: Date) {
+  return prisma.message.count({ where: { companyId, createdAt: { gt: since } } });
+}

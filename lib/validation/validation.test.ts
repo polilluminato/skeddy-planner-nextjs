@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { firstError } from "@/lib/action-state";
 import { changePasswordSchema, codeLoginSchema, signupSchema } from "./auth";
 import { employeeSchema } from "./employee";
+import { messageSchema } from "./message";
 import { shiftSchema } from "./shift";
 
 describe("validation", () => {
@@ -56,5 +57,14 @@ describe("validation", () => {
     const r = shiftSchema.safeParse({ ...base, end: "07:00" });
     expect(r.success).toBe(false);
     if (!r.success) expect(firstError(r.error)).toBe("L'ora di fine deve essere successiva all'inizio.");
+  });
+
+  it("valida il messaggio", () => {
+    expect(messageSchema.parse({ body: "  Riunione alle 9\n  " }).body).toBe("Riunione alle 9");
+    const empty = messageSchema.safeParse({ body: "   " });
+    expect(empty.success).toBe(false);
+    if (!empty.success) expect(firstError(empty.error)).toBe("Scrivi un messaggio.");
+    expect(messageSchema.safeParse({}).success).toBe(false);
+    expect(messageSchema.safeParse({ body: "x".repeat(1001) }).success).toBe(false);
   });
 });

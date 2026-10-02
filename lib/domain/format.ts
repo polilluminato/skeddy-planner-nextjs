@@ -43,3 +43,15 @@ export function weekdayLabels(): string[] {
   const monday = "2026-09-28";
   return Array.from({ length: 7 }, (_, i) => formatShortWeekday(addDays(monday, i)));
 }
+
+const clocks = new Map<string, Intl.DateTimeFormat>();
+
+/** "14:05" nel fuso indicato (per istanti reali, non per date ISO). */
+export function formatClock(date: Date, timeZone: string): string {
+  let clock = clocks.get(timeZone);
+  if (!clock) {
+    clock = new Intl.DateTimeFormat(APP_LOCALE, { timeZone, hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
+    clocks.set(timeZone, clock);
+  }
+  return clock.format(date);
+}
