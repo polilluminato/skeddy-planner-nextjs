@@ -13,18 +13,22 @@
   }
 }
 
-/* Brand ispirato a Notion (awesome-design-md): neutri caldi, viola come unico accento. */
+/* Brand da `docs/design.md` (stile Cal.com): monocromo, nero come unico colore d'azione, Cal Sans per i titoli. */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-inter);
-  --font-heading: var(--font-inter);
+  --font-heading: var(--font-cal-sans), var(--font-inter);
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
   --color-ring: var(--ring);
   --color-input: var(--input);
   --color-border: var(--border);
   --color-destructive: var(--destructive);
   --color-success: var(--success);
   --color-warning: var(--warning);
+  --color-surface-dark: var(--surface-dark);
+  --color-on-dark: var(--on-dark);
+  --color-on-dark-soft: var(--on-dark-soft);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
   --color-muted-foreground: var(--muted-foreground);
@@ -37,11 +41,12 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
+  /* Scala del design: xs 4 · sm 6 · md 8 (bottoni, input = `rounded-lg`) · lg 12 (card = `rounded-xl`) · xl 16 */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
   --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
 }
@@ -58,51 +63,61 @@
   --text-lg--line-height: 1.4;
 }
 
+/* Semantici: le tinte del design (#ef4444, #10b981, #f59e0b) sono scurite per il contrasto AA del testo su bianco. */
 :root {
-  --radius: 0.625rem;
-  --background: #ffffff;
-  --foreground: #37352f;
+  --radius: 0.5rem;
+  --background: #ffffff; /* canvas */
+  --foreground: #111111; /* ink */
   --card: #ffffff;
-  --card-foreground: #37352f;
+  --card-foreground: #111111;
   --popover: #ffffff;
-  --popover-foreground: #37352f;
-  --primary: #5645d4; /* = BRAND_COLOR in config/app.ts */
+  --popover-foreground: #111111;
+  --primary: #111111; /* = BRAND_COLOR in config/app.ts */
   --primary-foreground: #ffffff;
-  --secondary: #f6f5f4;
-  --secondary-foreground: #37352f;
-  --muted: #f6f5f4;
-  --muted-foreground: #5d5b54;
-  --accent: #f0eeec;
-  --accent-foreground: #1a1a1a;
-  --destructive: #c92a2a;
-  --success: #1b7f32;
-  --warning: #b34a00;
-  --border: #e5e3df;
-  --input: #c8c4be;
-  --ring: #5645d4;
+  --secondary: #f5f5f5; /* surface-card */
+  --secondary-foreground: #111111;
+  --muted: #f8f9fa; /* surface-soft */
+  --muted-foreground: #6b7280;
+  --accent: #f3f4f6; /* hairline-soft */
+  --accent-foreground: #111111;
+  --destructive: #dc2626;
+  --success: #047857;
+  --warning: #b45309;
+  --border: #e5e7eb; /* hairline */
+  --input: #e5e7eb;
+  --ring: #111111;
+  /* Footer scuro della landing: l'unica superficie scura del tema chiaro. */
+  --surface-dark: #101010;
+  --on-dark: #ffffff;
+  --on-dark-soft: #a1a1aa;
 }
 
+/* Scuro derivato dalle superfici dark del design (surface-dark, surface-dark-elevated, on-dark-soft). */
 .dark {
-  --background: #191918;
-  --foreground: #ecebe9;
-  --card: #222220;
-  --card-foreground: #ecebe9;
-  --popover: #262624;
-  --popover-foreground: #ecebe9;
-  --primary: #a197f0;
-  --primary-foreground: #14102e;
-  --secondary: #2c2c2a;
-  --secondary-foreground: #ecebe9;
-  --muted: #2c2c2a;
-  --muted-foreground: #b3b0a8;
-  --accent: #33332f;
+  --background: #101010;
+  --foreground: #ffffff;
+  --card: #1a1a1a;
+  --card-foreground: #ffffff;
+  --popover: #1a1a1a;
+  --popover-foreground: #ffffff;
+  --primary: #ffffff;
+  --primary-foreground: #111111;
+  --secondary: #242424;
+  --secondary-foreground: #ffffff;
+  --muted: #202020;
+  --muted-foreground: #a1a1aa;
+  --accent: #242424;
   --accent-foreground: #ffffff;
-  --destructive: #ff8787;
-  --success: #69db7c;
-  --warning: #ffa94d;
-  --border: #3a3936;
-  --input: #55534e;
-  --ring: #a197f0;
+  --destructive: #ef4444;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --border: #2a2a2a;
+  --input: #3a3a3a;
+  --ring: #ffffff;
+  /* Sullo sfondo già #101010 il footer sale a surface-dark-elevated per restare distinto. */
+  --surface-dark: #1a1a1a;
+  --on-dark: #ffffff;
+  --on-dark-soft: #a1a1aa;
 }
 
 @layer base {
@@ -111,10 +126,16 @@
   }
   html {
     @apply font-sans;
+    /* Cal Sans ha un solo peso: niente grassetto finto su `font-semibold`. */
+    font-synthesis-weight: none;
     -webkit-tap-highlight-color: transparent;
   }
   body {
     @apply bg-background text-foreground text-base;
+  }
+  /* Titoli di pagina in Cal Sans con tracking negativo; il resto resta Inter. */
+  h1 {
+    @apply font-heading tracking-tight;
   }
   button:not(:disabled),
   [role="button"]:not(:disabled) {

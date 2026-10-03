@@ -1,3 +1,4 @@
+import { MemberChip } from "@/components/common/member-chip";
 import { formatMinutes, type WeeklyStatus } from "@/lib/domain/shifts";
 import type { HoursRow } from "@/lib/domain/schedule";
 import { cn } from "@/lib/utils";
@@ -60,8 +61,9 @@ export function HoursSummary({
           return (
             <li key={row.userId} className="grid gap-1.5">
               <div className="flex items-center gap-2">
-                <span className="size-2.5 shrink-0 rounded-full" style={{ background: member.color }} aria-hidden />
-                <span className="min-w-0 flex-1 truncate text-sm font-medium">{memberName(member)}</span>
+                <span className="flex min-w-0 flex-1 text-sm">
+                  <MemberChip name={memberName(member)} color={member.color} />
+                </span>
                 <span className="text-sm font-semibold tabular-nums">
                   {formatMinutes(row.planned)}
                   {row.target > 0 && (

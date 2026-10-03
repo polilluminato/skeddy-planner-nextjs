@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   CalendarDaysIcon,
+  LogOutIcon,
   MessagesSquareIcon,
   PanelLeftCloseIcon,
   PanelLeftOpenIcon,
@@ -12,8 +13,10 @@ import {
   UsersRoundIcon,
 } from "lucide-react";
 import { Logo } from "@/components/common/logo";
+import { Button } from "@/components/ui/button";
 import { SIDEBAR_COOKIE } from "@/config/app";
 import { cn } from "@/lib/utils";
+import { LogoutButton } from "./logout-button";
 
 const ITEMS = [
   { href: "/calendar", label: "Calendario", icon: CalendarDaysIcon, adminOnly: false },
@@ -53,7 +56,7 @@ export function AppNav({
       data-sidebar-collapsed={collapsed ? "" : undefined}
       className={cn(
         "fixed inset-x-0 bottom-0 z-30 border-t bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur supports-[backdrop-filter]:bg-background/80",
-        "desktop:inset-y-0 desktop:right-auto desktop:border-t-0 desktop:border-r desktop:pt-[env(safe-area-inset-top)] desktop:pb-4",
+        "desktop:inset-y-0 desktop:right-auto desktop:flex desktop:flex-col desktop:border-t-0 desktop:border-r desktop:pt-[env(safe-area-inset-top)] desktop:pb-4",
         collapsed ? "desktop:w-16" : "desktop:w-60",
       )}
     >
@@ -111,6 +114,21 @@ export function AppNav({
           );
         })}
       </ul>
+      {/* Solo nella sidebar desktop; su mobile si esce dal Profilo. */}
+      <div className={cn("mt-auto hidden desktop:block", collapsed ? "desktop:px-2" : "desktop:px-3")}>
+        <LogoutButton
+          trigger={
+            <Button
+              variant="outline"
+              title={collapsed ? "Esci" : undefined}
+              className={cn("h-11 w-full gap-3", collapsed ? "px-0" : "justify-start px-3")}
+            >
+              <LogOutIcon className="size-5" aria-hidden />
+              <span className={cn(collapsed && "sr-only")}>Esci</span>
+            </Button>
+          }
+        />
+      </div>
     </nav>
   );
 }

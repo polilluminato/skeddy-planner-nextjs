@@ -40,7 +40,7 @@ export function LogoMark({
 
 export function Logo({ className }: { className?: string }) {
   return (
-    <span className={cn("inline-flex items-center gap-2 font-semibold tracking-tight", className)}>
+    <span className={cn("inline-flex items-center gap-2 font-heading font-semibold tracking-tight", className)}>
       <LogoMark />
       <span>{APP_NAME}</span>
     </span>

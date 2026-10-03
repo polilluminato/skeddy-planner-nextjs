@@ -29,7 +29,7 @@ export function CodeLoginForm() {
         autoCapitalize="characters"
         autoCorrect="off"
         spellCheck={false}
-        className="font-mono uppercase tracking-wider"
+        className="uppercase tracking-wider"
         required
         hint="8 caratteri, ricevuto dal tuo amministratore."
       />

@@ -1,8 +1,8 @@
 export const APP_NAME = "Skeddy Planner";
 export const APP_SHORT_NAME = "Skeddy";
 export const APP_DESCRIPTION = "Turni del personale, semplici, dal telefono.";
-/** Viola del marchio (logo e icone). In `app/globals.css` è `--primary` del tema chiaro: cambiarli insieme. */
-export const BRAND_COLOR = "#5645d4";
+/** Nero del marchio (logo e icone). In `app/globals.css` è `--primary` del tema chiaro: cambiarli insieme. */
+export const BRAND_COLOR = "#111111";
 export const APP_LOCALE = "it-IT";
 /** Fuso orario di riferimento per "oggi" e per le settimane: mai quello del server. */
 export const APP_TIME_ZONE = "Europe/Rome";

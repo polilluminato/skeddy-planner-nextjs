@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ChevronLeftIcon } from "lucide-react";
 import { HoursSummary } from "@/components/calendar/hours-summary";
 import type { CalendarMember } from "@/components/calendar/types";
+import { MemberChip } from "@/components/common/member-chip";
 import { MemberBadges } from "@/components/team/member-badges";
 import { APP_TIME_ZONE } from "@/config/app";
 import { requireSuperAdmin } from "@/lib/auth/guards";
@@ -45,11 +46,8 @@ export default async function SuperAdminCompany({ params }: PageProps<"/admin/co
         <ul className="divide-y overflow-hidden rounded-xl border bg-card">
           {company.users.map((u) => (
             <li key={u.id} className="flex min-h-14 items-center gap-3 px-4 py-3">
-              <span className="size-3 shrink-0 rounded-full" style={{ background: u.color }} aria-hidden />
-              <span className="grid min-w-0 flex-1 gap-0.5">
-                <span className="truncate font-medium">
-                  {u.firstName} {u.lastName}
-                </span>
+              <span className="grid min-w-0 flex-1 justify-items-start gap-1">
+                <MemberChip name={`${u.firstName} ${u.lastName}`} color={u.color} />
                 {u.email && <span className="truncate text-xs text-muted-foreground">{u.email}</span>}
               </span>
               <MemberBadges role={u.role} isOwner={u.isOwner} />

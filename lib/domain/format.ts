@@ -45,11 +45,6 @@ export function dayOfMonth(iso: ISODate): number {
   return Number(iso.slice(8, 10));
 }
 
-export function weekdayLabels(): string[] {
-  const monday = "2026-09-28";
-  return Array.from({ length: 7 }, (_, i) => formatShortWeekday(addDays(monday, i)));
-}
-
 const clock = new Intl.DateTimeFormat(APP_LOCALE, {
   timeZone: APP_TIME_ZONE,
   hour: "2-digit",

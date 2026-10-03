@@ -1,6 +1,6 @@
 # Skeddy Planner
 
-PWA mobile per gestire i turni del personale di più aziende: dipendenti, turni giornalieri, ore settimanali previste e calendario (giorno/settimana/mese).
+PWA mobile per gestire i turni del personale di più aziende: dipendenti, turni giornalieri, ore settimanali previste e calendario (giorno/settimana).
 
 Stack: Next.js 16, React 19, Tailwind 4 + shadcn/ui, Prisma 7 su Neon PostgreSQL, Vitest. Dettagli in [`docs/architecture.md`](docs/architecture.md).
 

@@ -3,7 +3,7 @@ import { CalendarDaysIcon, ClockIcon, KeyRoundIcon, MessagesSquareIcon } from "l
 import { Logo } from "@/components/common/logo";
 import { ThemeToggle } from "@/components/nav/theme-toggle";
 import { Button } from "@/components/ui/button";
-import { APP_DESCRIPTION, APP_NAME } from "@/config/app";
+import { APP_DESCRIPTION } from "@/config/app";
 import { redirectIfAuthenticated } from "@/lib/auth/guards";
 
 const FEATURES = [
@@ -33,7 +33,7 @@ const FEATURES = [
 export default async function Home() {
   await redirectIfAuthenticated();
   return (
-    <div className="flex min-h-dvh flex-col pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]">
+    <div className="flex min-h-dvh flex-col pt-[env(safe-area-inset-top)]">
       <header className="mx-auto flex h-16 w-full max-w-4xl items-center justify-between gap-2 px-4">
         <Logo />
         <div className="flex items-center gap-1">
@@ -68,8 +68,8 @@ export default async function Home() {
           </h2>
           <ul className="grid gap-3 sm:grid-cols-2">
             {FEATURES.map(({ icon: Icon, title, text }) => (
-              <li key={title} className="flex gap-3 rounded-xl border bg-card p-4">
-                <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary">
+              <li key={title} className="flex gap-3 rounded-xl bg-secondary p-5">
+                <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-background">
                   <Icon className="size-5" aria-hidden />
                 </span>
                 <span className="grid gap-1">
@@ -82,7 +82,12 @@ export default async function Home() {
         </section>
       </main>
 
-      <footer className="mx-auto w-full max-w-4xl border-t px-4 py-6 text-sm text-muted-foreground">{APP_NAME}</footer>
+      <footer className="bg-surface-dark pb-[env(safe-area-inset-bottom)] text-sm text-on-dark-soft">
+        <div className="mx-auto grid w-full max-w-4xl gap-3 px-4 py-12">
+          <Logo className="text-on-dark" />
+          <p>{APP_DESCRIPTION}</p>
+        </div>
+      </footer>
     </div>
   );
 }

@@ -8,7 +8,7 @@ export function AppHeader({
 }: {
   title: string;
   subtitle?: string;
-  /** Azioni della pagina, a destra prima dello switch del tema. */
+  /** Azioni della pagina, tutto a destra dopo lo switch del tema. */
   children?: React.ReactNode;
 }) {
   return (
@@ -19,8 +19,8 @@ export function AppHeader({
           <p className="truncate font-semibold leading-tight">{title}</p>
           {subtitle && <p className="truncate text-xs text-muted-foreground">{subtitle}</p>}
         </div>
-        {children}
         <ThemeToggle />
+        {children}
       </div>
     </header>
   );

@@ -70,17 +70,3 @@ export function endOfMonth(iso: ISODate): ISODate {
   return addDays(addMonths(startOfMonth(iso), 1), -1);
 }
 
-export function isSameMonth(a: ISODate, b: ISODate): boolean {
-  return a.slice(0, 7) === b.slice(0, 7);
-}
-
-/** Settimane (lun–dom) che coprono il mese della data. */
-export function monthGrid(iso: ISODate): ISODate[][] {
-  const first = startOfWeek(startOfMonth(iso));
-  const last = endOfMonth(iso);
-  const weeks: ISODate[][] = [];
-  for (let start = first; start <= last; start = addDays(start, 7)) {
-    weeks.push(Array.from({ length: 7 }, (_, i) => addDays(start, i)));
-  }
-  return weeks;
-}

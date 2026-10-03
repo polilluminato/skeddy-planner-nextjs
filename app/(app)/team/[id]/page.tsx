@@ -6,6 +6,7 @@ import { DaySection } from "@/components/calendar/day-list";
 import { HoursSummary } from "@/components/calendar/hours-summary";
 import { ShiftEditorProvider } from "@/components/calendar/shift-editor";
 import type { CalendarMember } from "@/components/calendar/types";
+import { MemberChip } from "@/components/common/member-chip";
 import { AppHeader } from "@/components/nav/app-header";
 import { Button } from "@/components/ui/button";
 import { EditEmployee } from "@/components/team/edit-employee";
@@ -58,14 +59,11 @@ export default async function MemberPage({ params, searchParams }: PageProps<"/t
             aria-labelledby="member-title"
             className="grid gap-4 rounded-xl border bg-card p-4 desktop:lg:col-start-1"
           >
-            <div className="flex items-start gap-3">
-              <span className="mt-1.5 size-4 shrink-0 rounded-full" style={{ background: member.color }} aria-hidden />
-              <div className="grid min-w-0 flex-1 gap-1">
-                <h1 id="member-title" className="text-xl font-semibold tracking-tight">
-                  {name}
-                </h1>
-                <MemberBadges role={member.role} isOwner={member.isOwner} isMe={isMe} />
-              </div>
+            <div className="grid min-w-0 justify-items-start gap-2">
+              <h1 id="member-title" className="max-w-full text-xl font-semibold tracking-tight">
+                <MemberChip name={name} color={member.color} />
+              </h1>
+              <MemberBadges role={member.role} isOwner={member.isOwner} isMe={isMe} />
             </div>
             <dl className="grid grid-cols-2 gap-3 border-t pt-3">
               <div>

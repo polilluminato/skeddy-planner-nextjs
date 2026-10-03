@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { layoutOverlaps, minuteOffset, minutesToTime, slotRange, verticalPosition, visibleHours } from "./time-grid";
+import { horizontalPosition, layoutOverlaps, minuteOffset, minutesToTime, slotRange, verticalPosition, visibleHours } from "./time-grid";
 
 const s = (id: string, start: string, end: string) => ({ id, start, end });
 
@@ -37,6 +37,14 @@ describe("time-grid", () => {
     const placed = layoutOverlaps([s("a", "08:00", "16:00"), s("b", "08:00", "12:00"), s("c", "09:00", "10:00")]);
     expect(placed.map((p) => p.columns)).toEqual([3, 3, 3]);
     expect(new Set(placed.map((p) => p.column)).size).toBe(3);
+  });
+
+  it("allarga i turni sovrapposti oltre la loro colonna, l'ultima fino al bordo", () => {
+    expect(horizontalPosition(0, 1)).toEqual({ left: 0, width: 100 });
+    expect(horizontalPosition(0, 2)).toEqual({ left: 0, width: 85 });
+    expect(horizontalPosition(1, 2)).toEqual({ left: 50, width: 50 });
+    const middle = horizontalPosition(1, 3);
+    expect(middle.left + middle.width).toBeLessThanOrEqual(100);
   });
 
   it("calcola la posizione verticale in percentuale", () => {

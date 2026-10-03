@@ -5,6 +5,10 @@ import { EmailLoginForm } from "@/components/auth/email-login-form";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { redirectIfAuthenticated } from "@/lib/auth/guards";
 
+// Stesso aspetto dello switch Giorno/Settimana del calendario (`components/calendar/toolbar.tsx`).
+const TRIGGER =
+  "h-10! text-muted-foreground! hover:text-foreground! data-active:text-foreground! dark:data-active:border-transparent! dark:data-active:bg-background!";
+
 export const metadata: Metadata = { title: "Accedi" };
 
 export default async function LoginPage() {
@@ -16,11 +20,11 @@ export default async function LoginPage() {
         <p className="text-muted-foreground">I turni della tua azienda, sempre a portata di mano.</p>
       </div>
       <Tabs defaultValue="codes" className="gap-5">
-        <TabsList className="grid h-11 w-full grid-cols-2">
-          <TabsTrigger value="codes" className="h-9">
+        <TabsList className="grid h-12! w-full grid-cols-2 p-1!">
+          <TabsTrigger value="codes" className={TRIGGER}>
             Con i codici
           </TabsTrigger>
-          <TabsTrigger value="email" className="h-9">
+          <TabsTrigger value="email" className={TRIGGER}>
             Con email
           </TabsTrigger>
         </TabsList>

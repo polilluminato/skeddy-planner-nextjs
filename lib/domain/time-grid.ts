@@ -52,6 +52,19 @@ export function layoutOverlaps<T extends TimeRange>(shifts: readonly T[]): Place
   return result;
 }
 
+/** Quanto si allarga un turno oltre la sua colonna, sovrapponendosi in parte al vicino (come Google Calendar). */
+const OVERLAP_STRETCH = 1.7;
+
+/**
+ * Posizione orizzontale (in %) di un turno nel suo gruppo: parte dalla sua colonna e si allarga
+ * verso destra; l'ultima colonna arriva al bordo. I turni dopo (iniziano più tardi) stanno sopra.
+ */
+export function horizontalPosition(column: number, columns: number): { left: number; width: number } {
+  const left = (column / columns) * 100;
+  const width = column === columns - 1 ? 100 - left : Math.min(100 - left, (100 / columns) * OVERLAP_STRETCH);
+  return { left, width };
+}
+
 /** Posizione verticale (in % della fascia visibile) di un intervallo orario. */
 export function verticalPosition(range: TimeRange, hours: HourRange): { top: number; height: number } {
   const total = (hours.to - hours.from) * 60;

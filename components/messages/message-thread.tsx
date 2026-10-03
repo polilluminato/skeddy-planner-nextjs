@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { ChevronUpIcon, MessagesSquareIcon, Trash2Icon } from "lucide-react";
 import { deleteMessage, markMessagesRead } from "@/actions/messages";
 import { ConfirmAction } from "@/components/common/confirm-action";
+import { MemberChip } from "@/components/common/member-chip";
 import { Button } from "@/components/ui/button";
 import type { TimelineItem } from "@/lib/domain/messages";
 import { cn } from "@/lib/utils";
@@ -146,12 +147,11 @@ function MessageBubble({
   return (
     <article className={cn("grid gap-1", item.mine ? "justify-items-end" : "justify-items-start")}>
       <p className="flex items-center gap-1.5 px-1 text-xs text-muted-foreground">
-        <span
-          className={cn("size-2 shrink-0 rounded-full", !item.authorColor && "bg-muted-foreground/40")}
-          style={item.authorColor ? { background: item.authorColor } : undefined}
-          aria-hidden
-        />
-        <span className="font-medium text-foreground">{item.mine ? "Tu" : item.authorName}</span>
+        {!item.mine && item.authorColor ? (
+          <MemberChip name={item.authorName} color={item.authorColor} className="text-foreground" />
+        ) : (
+          <span className="font-medium text-foreground">{item.mine ? "Tu" : item.authorName}</span>
+        )}
         <span aria-hidden>·</span>
         <time dateTime={item.sentAt} className="tabular-nums">
           {item.time}

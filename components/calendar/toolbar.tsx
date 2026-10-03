@@ -2,15 +2,13 @@ import Link from "next/link";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { calendarHref, shiftPeriod, type CalendarState, type CalendarView } from "@/lib/domain/calendar";
-import { formatLongDay, formatMonthYear, formatWeekRange } from "@/lib/domain/format";
+import { formatLongDay, formatWeekRange } from "@/lib/domain/format";
 import { cn } from "@/lib/utils";
 
-const VIEW_LABELS: Record<CalendarView, string> = { day: "Giorno", week: "Settimana", month: "Mese" };
+const VIEW_LABELS: Record<CalendarView, string> = { day: "Giorno", week: "Settimana" };
 
 function periodLabel({ view, date }: CalendarState): string {
-  if (view === "day") return formatLongDay(date);
-  if (view === "week") return formatWeekRange(date);
-  return formatMonthYear(date);
+  return view === "day" ? formatLongDay(date) : formatWeekRange(date);
 }
 
 export function CalendarToolbar({
@@ -28,7 +26,7 @@ export function CalendarToolbar({
 
   return (
     <div className="grid gap-3 desktop:flex desktop:items-center desktop:gap-6">
-      <nav aria-label="Vista calendario" className="grid grid-cols-3 rounded-lg bg-muted p-1 desktop:order-last desktop:w-80">
+      <nav aria-label="Vista calendario" className="grid grid-cols-2 rounded-lg bg-muted p-1 desktop:order-last desktop:w-80">
         {(Object.keys(VIEW_LABELS) as CalendarView[]).map((view) => {
           const active = view === state.view;
           return (

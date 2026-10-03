@@ -1,6 +1,7 @@
 "use client";
 
 import { ChevronRightIcon } from "lucide-react";
+import { MemberChip } from "@/components/common/member-chip";
 import { formatMinutes, shiftMinutes } from "@/lib/domain/shifts";
 import { cn } from "@/lib/utils";
 import { useShiftEditor } from "./shift-editor";
@@ -27,9 +28,9 @@ export function ShiftCard({ shift, member, isMine, canEdit }: Props) {
           </span>
           <span className="text-xs text-muted-foreground tabular-nums">{duration}</span>
         </span>
-        <span className="truncate text-sm">
-          {name}
-          {isMine && <span className="ml-1.5 text-xs font-semibold text-primary">(tu)</span>}
+        <span className="mt-0.5 flex min-w-0 items-center text-sm">
+          <MemberChip name={name} color={member.color} />
+          {isMine && <span className="ml-1.5 shrink-0 text-xs font-semibold text-primary">(tu)</span>}
         </span>
         {shift.note && <span className="truncate text-xs text-muted-foreground">{shift.note}</span>}
       </span>

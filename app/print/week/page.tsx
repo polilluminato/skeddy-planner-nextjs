@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { MemberChip } from "@/components/common/member-chip";
 import { PrintButton } from "@/components/common/print-button";
 import { APP_TIME_ZONE } from "@/config/app";
 import { requireAdmin } from "@/lib/auth/guards";
@@ -19,7 +20,8 @@ export default async function PrintWeekPage({ searchParams }: PageProps<"/print/
 
   return (
     // Sempre chiaro: in stampa lo sfondo scuro non esce e il testo chiaro sparirebbe.
-    <main className="min-h-dvh bg-white p-6 text-black print:p-0">
+    // `--card` bianco anche col tema scuro: i chip dei dipendenti mescolano il colore con la card.
+    <main className="min-h-dvh bg-white p-6 text-black print:p-0" style={{ "--card": "#ffffff" } as React.CSSProperties}>
       <style>{"@page { size: A4 landscape; margin: 1cm; }"}</style>
       <div className="mb-4 flex items-end justify-between gap-4">
         <div>
@@ -51,7 +53,7 @@ export default async function PrintWeekPage({ searchParams }: PageProps<"/print/
             return (
               <tr key={m.id} className="break-inside-avoid">
                 <th scope="row" className="border border-neutral-400 p-2 text-left align-top font-medium">
-                  {m.firstName} {m.lastName}
+                  <MemberChip name={`${m.firstName} ${m.lastName}`} color={m.color} />
                 </th>
                 {days.map((day) => (
                   <td key={day} className="border border-neutral-400 p-2 align-top">

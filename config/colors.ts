@@ -1,7 +1,7 @@
 /**
  * Palette per distinguere i dipendenti nel calendario (colori come dati, applicati via style).
- * Niente viola (è il brand: "oggi", "i miei turni") né rosso/verde/arancio (sono gli stati delle ore);
- * ogni colore ha contrasto ≥ 3:1 sia su `--card` chiaro (#ffffff) sia scuro (#222220).
+ * Niente neutri (il brand è monocromo: "oggi", "i miei turni") né rosso/verde/arancio (sono gli stati delle ore);
+ * ogni colore ha contrasto ≥ 3:1 sia su `--card` chiaro (#ffffff) sia scuro (#1a1a1a).
  */
 export const EMPLOYEE_COLORS = [
   { value: "#2f7fd6", label: "Blu" },

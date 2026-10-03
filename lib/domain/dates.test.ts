@@ -4,7 +4,6 @@ import {
   addMonths,
   endOfMonth,
   isISODate,
-  monthGrid,
   startOfWeek,
   todayISO,
   weekDays,
@@ -50,11 +49,7 @@ describe("dates", () => {
     ]);
   });
 
-  it("costruisce la griglia del mese", () => {
-    const grid = monthGrid("2026-09-15");
-    expect(grid[0][0]).toBe("2026-08-31");
-    expect(grid.at(-1)!.at(-1)).toBe("2026-10-04");
-    expect(grid).toHaveLength(5);
+  it("trova la fine del mese (export CSV)", () => {
     expect(endOfMonth("2028-02-10")).toBe("2028-02-29");
   });
 });

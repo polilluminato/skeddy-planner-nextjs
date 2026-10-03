@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { LogOutIcon } from "lucide-react";
-import { logout } from "@/actions/auth";
 import { HoursSummary } from "@/components/calendar/hours-summary";
 import type { CalendarMember } from "@/components/calendar/types";
 import { CodeReveal } from "@/components/common/code-reveal";
+import { MemberChip } from "@/components/common/member-chip";
 import { AppHeader } from "@/components/nav/app-header";
+import { LogoutButton } from "@/components/nav/logout-button";
 import { ChangePasswordForm } from "@/components/profile/change-password";
 import { MemberBadges } from "@/components/team/member-badges";
 import { Button } from "@/components/ui/button";
@@ -25,17 +26,22 @@ export default async function ProfilePage() {
 
   return (
     <>
-      <AppHeader title="Profilo" subtitle={company.name} />
+      <AppHeader title="Profilo" subtitle={company.name}>
+        <LogoutButton
+          trigger={
+            <Button variant="outline" size="icon" className="size-11" aria-label="Esci" title="Esci">
+              <LogOutIcon className="size-5" aria-hidden />
+            </Button>
+          }
+        />
+      </AppHeader>
       <main className="mx-auto grid max-w-2xl gap-5 px-4 py-4 desktop:max-w-none desktop:px-8 desktop:py-6 desktop:lg:grid-cols-2 desktop:lg:items-start">
         <section aria-labelledby="me-title" className="grid gap-3 rounded-xl border bg-card p-4">
-          <div className="flex items-start gap-3">
-            <span className="mt-1.5 size-4 shrink-0 rounded-full" style={{ background: user.color }} aria-hidden />
-            <div className="grid gap-1">
-              <h1 id="me-title" className="text-xl font-semibold tracking-tight">
-                {user.firstName} {user.lastName}
-              </h1>
-              <MemberBadges role={user.role} isOwner={user.isOwner} />
-            </div>
+          <div className="grid min-w-0 justify-items-start gap-2">
+            <h1 id="me-title" className="max-w-full text-xl font-semibold tracking-tight">
+              <MemberChip name={`${user.firstName} ${user.lastName}`} color={user.color} />
+            </h1>
+            <MemberBadges role={user.role} isOwner={user.isOwner} />
           </div>
           <dl className="grid gap-3 border-t pt-3">
             <div>
@@ -66,13 +72,6 @@ export default async function ProfilePage() {
             <ChangePasswordForm />
           </section>
         )}
-
-        <form action={logout} className="desktop:lg:col-span-2">
-          <Button type="submit" variant="ghost" className="h-11 w-full text-base text-destructive">
-            <LogOutIcon aria-hidden />
-            Esci
-          </Button>
-        </form>
       </main>
     </>
   );

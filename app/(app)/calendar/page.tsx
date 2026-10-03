@@ -4,7 +4,6 @@ import { DownloadIcon, PrinterIcon } from "lucide-react";
 import { AddShiftButton } from "@/components/calendar/add-shift-button";
 import { DaySection } from "@/components/calendar/day-list";
 import { HoursSummary } from "@/components/calendar/hours-summary";
-import { MonthView } from "@/components/calendar/month-view";
 import { ShiftEditorProvider } from "@/components/calendar/shift-editor";
 import { CalendarToolbar } from "@/components/calendar/toolbar";
 import type { CalendarMember } from "@/components/calendar/types";
@@ -57,7 +56,7 @@ export default async function CalendarPage({ searchParams }: PageProps<"/calenda
 
   // Vista desktop degli admin: card ore del team + griglia oraria per giorno e settimana.
   const gridDays = state.view === "week" ? weekDays(state.date) : [state.date];
-  const timeGrid = isAdmin && state.view !== "month" && (
+  const timeGrid = isAdmin && (
     <TimeGrid
       days={gridDays}
       today={today}
@@ -71,6 +70,23 @@ export default async function CalendarPage({ searchParams }: PageProps<"/calenda
     />
   );
 
+  const exportActions = isAdmin && (
+    <>
+      <Button asChild variant="outline" className="h-11">
+        <a href={`/calendar/export?month=${state.date.slice(0, 7)}`} download>
+          <DownloadIcon aria-hidden />
+          CSV {formatMonthYear(state.date)}
+        </a>
+      </Button>
+      <Button asChild variant="outline" className="h-11">
+        <a href={`/print/week?date=${state.date}`} target="_blank">
+          <PrinterIcon aria-hidden />
+          Stampa settimana
+        </a>
+      </Button>
+    </>
+  );
+
   const content = (
     <main className="mx-auto grid max-w-2xl gap-4 px-4 py-4 desktop:max-w-none desktop:px-8 desktop:py-6">
       <h1 className="sr-only">Calendario turni</h1>
@@ -79,9 +95,12 @@ export default async function CalendarPage({ searchParams }: PageProps<"/calenda
           rows={hoursSummary(team, inRange(week.from, week.to))}
           members={members}
           title={`Ore assegnate · ${formatWeekRange(week.from)}`}
+          actions={<div className="flex gap-2">{exportActions}</div>}
           className="hidden desktop:block"
         />
       )}
+      {/* Su mobile le card delle ore sono nascoste: le azioni vanno sopra le tab. */}
+      {exportActions && <div className="flex flex-wrap gap-2 desktop:hidden">{exportActions}</div>}
       <div className="grid gap-4 desktop:flex desktop:items-center desktop:gap-6">
         <div className="desktop:flex-1">
           <CalendarToolbar state={state} today={today} extraParams={extraParams} />
@@ -109,53 +128,31 @@ export default async function CalendarPage({ searchParams }: PageProps<"/calenda
         </nav>
       </div>
 
-      {state.view === "month" && (
-        <MonthView date={state.date} today={today} byDate={byDate} members={members} extraParams={extraParams} />
-      )}
       {timeGrid && <div className="hidden desktop:block">{timeGrid}</div>}
       {/* Su mobile (e per i dipendenti) giorno e settimana restano a elenco. */}
-      {state.view !== "month" && (
-        <div className={cn("grid gap-4", timeGrid && "desktop:hidden")}>
-          {state.view === "week" && <WeekView date={state.date} today={today} byDate={byDate} {...listProps} />}
-          {state.view === "day" && (
-            <DaySection
-              date={state.date}
-              title={formatLongDay(state.date)}
-              isToday={state.date === today}
-              shifts={byDate.get(state.date) ?? []}
-              {...listProps}
-            />
-          )}
+      <div className={cn("grid gap-4", timeGrid && "desktop:hidden")}>
+        {state.view === "week" && <WeekView date={state.date} today={today} byDate={byDate} {...listProps} />}
+        {state.view === "day" && (
+          <DaySection
+            date={state.date}
+            title={formatLongDay(state.date)}
+            isToday={state.date === today}
+            shifts={byDate.get(state.date) ?? []}
+            {...listProps}
+          />
+        )}
 
-          {summary.length > 0 && <HoursSummary rows={summary} members={members} />}
-        </div>
-      )}
+        {summary.length > 0 && <HoursSummary rows={summary} members={members} />}
+      </div>
 
-      {isAdmin && <AddShiftButton date={state.view === "month" ? today : state.date} variant="fab" />}
+      {isAdmin && <AddShiftButton date={state.date} variant="fab" />}
       {isAdmin && <div className="h-16" aria-hidden />}
     </main>
   );
 
   return (
     <>
-      <AppHeader title="Calendario" subtitle={company.name}>
-        {isAdmin && (
-          <div className="flex gap-2">
-            <Button asChild variant="outline" className="h-11">
-              <a href={`/calendar/export?month=${state.date.slice(0, 7)}`} download>
-                <DownloadIcon aria-hidden />
-                <span className="sr-only desktop:not-sr-only">CSV {formatMonthYear(state.date)}</span>
-              </a>
-            </Button>
-            <Button asChild variant="outline" className="h-11">
-              <a href={`/print/week?date=${state.date}`} target="_blank">
-                <PrinterIcon aria-hidden />
-                <span className="sr-only desktop:not-sr-only">Stampa settimana</span>
-              </a>
-            </Button>
-          </div>
-        )}
-      </AppHeader>
+      <AppHeader title="Calendario" subtitle={company.name} />
       {isAdmin ? <ShiftEditorProvider members={team}>{content}</ShiftEditorProvider> : content}
     </>
   );

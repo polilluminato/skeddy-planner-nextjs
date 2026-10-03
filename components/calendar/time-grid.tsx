@@ -1,11 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import { MemberChip } from "@/components/common/member-chip";
 import { calendarHref } from "@/lib/domain/calendar";
 import { dayOfMonth, formatLongDay, formatShortWeekday } from "@/lib/domain/format";
 import { groupByDate } from "@/lib/domain/schedule";
 import { shiftMinutes } from "@/lib/domain/shifts";
 import {
+  horizontalPosition,
   layoutOverlaps,
   minuteOffset,
   minutesToTime,
@@ -139,6 +141,7 @@ export function TimeGrid({
                   const member = memberById.get(shift.userId);
                   if (!member) return null;
                   const { top, height } = verticalPosition(shift, hours);
+                  const { left, width } = horizontalPosition(column, count);
                   return (
                     <li
                       key={shift.id}
@@ -146,8 +149,8 @@ export function TimeGrid({
                       style={{
                         top: `${top}%`,
                         height: `${height}%`,
-                        left: `${(column / count) * 100}%`,
-                        width: `${100 / count}%`,
+                        left: `${left}%`,
+                        width: `${width}%`,
                       }}
                     >
                       <GridShift
@@ -190,14 +193,16 @@ function GridShift({
   // Sotto l'ora il blocco è basso: nome e orario su una riga sola.
   const compact = shiftMinutes(shift) < 60;
   const className = cn(
-    "flex h-full w-full min-w-0 overflow-hidden rounded-md border-l-4 px-2 py-1 text-left text-xs shadow-xs",
+    "flex h-full w-full min-w-0 overflow-hidden rounded-md border border-l-4 border-card px-2 py-1 text-left text-xs shadow-xs",
     compact ? "items-center gap-1.5" : "flex-col",
     isMine && "ring-2 ring-primary/40",
   );
   const style = { borderLeftColor: member.color, background: tint(member.color, 22) };
   const content = (
     <>
-      <span className="truncate font-semibold">{name}</span>
+      <span className="flex min-w-0 shrink">
+        <MemberChip name={name} color={member.color} />
+      </span>
       <span className="truncate text-muted-foreground tabular-nums">{time}</span>
       {!compact && shift.note && <span className="truncate text-muted-foreground">{shift.note}</span>}
     </>

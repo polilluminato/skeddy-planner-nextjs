@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ChevronRightIcon } from "lucide-react";
 import { HoursStatusText } from "@/components/calendar/hours-summary";
 import { CodeReveal } from "@/components/common/code-reveal";
+import { MemberChip } from "@/components/common/member-chip";
 import { AppHeader } from "@/components/nav/app-header";
 import { CreateEmployee } from "@/components/team/create-employee";
 import { MemberBadges } from "@/components/team/member-badges";
@@ -63,11 +64,8 @@ export default async function TeamPage() {
                     href={`/team/${m.id}`}
                     className="flex min-h-16 items-center gap-3 px-4 py-3 transition-colors hover:bg-accent"
                   >
-                    <span className="size-3 shrink-0 rounded-full" style={{ background: m.color }} aria-hidden />
-                    <span className="grid min-w-0 flex-1 gap-0.5">
-                      <span className="truncate font-medium">
-                        {m.firstName} {m.lastName}
-                      </span>
+                    <span className="grid min-w-0 flex-1 justify-items-start gap-1">
+                      <MemberChip name={`${m.firstName} ${m.lastName}`} color={m.color} />
                       <MemberBadges role={m.role} isOwner={m.isOwner} isMe={m.id === user.id} />
                       <span className="flex flex-wrap items-baseline gap-x-2">
                         <span className="text-sm tabular-nums">

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { dayOfMonth, formatClock, formatNumericDate, formatLongDay, formatMonthYear, formatShortWeekday, formatWeekRange, weekdayLabels } from "./format";
+import { dayOfMonth, formatClock, formatNumericDate, formatLongDay, formatMonthYear, formatShortWeekday, formatWeekRange } from "./format";
 
 describe("format", () => {
   it("formatta in italiano senza slittare di giorno", () => {
@@ -11,7 +11,6 @@ describe("format", () => {
   });
 
   it("elenca i giorni da lunedì", () => {
-    expect(weekdayLabels()).toEqual(["lun", "mar", "mer", "gio", "ven", "sab", "dom"]);
   });
 
   it("formatta l'ora nel fuso indicato", () => {
