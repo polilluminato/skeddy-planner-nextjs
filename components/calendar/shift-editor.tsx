@@ -126,11 +126,11 @@ function ShiftForm({ draft, members, onDone }: { draft: Draft; members: Calendar
         <div className="grid grid-cols-2 gap-3">
           <div className="grid gap-1.5">
             <Label htmlFor="shift-start">Inizio</Label>
-            <TimeField id="shift-start" name="start" label="Inizio" defaultValue={editing?.start ?? draft.start ?? "09:00"} />
+            <TimeField id="shift-start" name="start" label="Inizio" defaultValue={editing?.start ?? draft.start ?? "09:30"} />
           </div>
           <div className="grid gap-1.5">
             <Label htmlFor="shift-end">Fine</Label>
-            <TimeField id="shift-end" name="end" label="Fine" defaultValue={editing?.end ?? draft.end ?? "13:00"} />
+            <TimeField id="shift-end" name="end" label="Fine" defaultValue={editing?.end ?? draft.end ?? "13:30"} />
           </div>
         </div>
 

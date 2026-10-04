@@ -55,8 +55,8 @@ describe("time-grid", () => {
   });
 
   it("propone un orario da uno slot senza superare la mezzanotte", () => {
-    expect(slotRange(9)).toEqual({ start: "09:00", end: "13:00" });
-    expect(slotRange(22)).toEqual({ start: "22:00", end: "23:59" });
+    expect(slotRange(9)).toEqual({ start: "09:30", end: "13:30" });
+    expect(slotRange(22)).toEqual({ start: "22:30", end: "23:59" });
     expect(minutesToTime(-5)).toBe("00:00");
     expect(minutesToTime(7 * 60 + 5)).toBe("07:05");
   });

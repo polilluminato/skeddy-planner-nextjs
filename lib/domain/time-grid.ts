@@ -83,8 +83,8 @@ export function minutesToTime(minutes: number): string {
   return `${String(Math.floor(clamped / 60)).padStart(2, "0")}:${String(clamped % 60).padStart(2, "0")}`;
 }
 
-/** Orario proposto cliccando su uno slot libero: dall'ora scelta, 4 ore, senza passare la mezzanotte. */
+/** Orario proposto cliccando su uno slot libero: dalla mezz'ora dell'ora scelta, 4 ore, senza passare la mezzanotte. */
 export function slotRange(hour: number): TimeRange {
-  const start = Math.max(0, Math.min(23, hour)) * 60;
+  const start = Math.max(0, Math.min(23, hour)) * 60 + 30;
   return { start: minutesToTime(start), end: minutesToTime(Math.min(start + 240, LAST_MINUTE)) };
 }
