@@ -55,11 +55,12 @@ export async function updateEmployee(
 }
 
 export async function deleteEmployee(employeeId: string): Promise<ActionState> {
-  const { companyId, user } = await requireAdmin();
-  if (employeeId === user.id) return { error: "Non puoi eliminare il tuo account." };
+  const { companyId, meId, isSupervisor } = await requireAdmin();
+  if (employeeId === meId) return { error: "Non puoi eliminare il tuo account." };
 
+  // Il direttore è protetto dagli altri admin, non dall'Amministrazione che sta sopra.
   const { count } = await prisma.user.deleteMany({
-    where: { id: employeeId, companyId, isOwner: false },
+    where: { id: employeeId, companyId, ...(isSupervisor ? {} : { isOwner: false }) },
   });
   if (count === 0) return { error: "Impossibile eliminare questo utente." };
 
@@ -68,14 +69,14 @@ export async function deleteEmployee(employeeId: string): Promise<ActionState> {
 }
 
 export async function setEmployeeRole(employeeId: string, role: "ADMIN" | "EMPLOYEE"): Promise<ActionState> {
-  const { companyId, user } = await requireAdmin();
-  if (employeeId === user.id) return { error: "Non puoi cambiare il tuo ruolo." };
+  const { companyId, meId, isSupervisor } = await requireAdmin();
+  if (employeeId === meId) return { error: "Non puoi cambiare il tuo ruolo." };
 
   const result = await prisma.$transaction(
     async (tx) => {
       const target = await tx.user.findFirst({ where: { id: employeeId, companyId } });
       if (!target) return { error: "Dipendente non trovato." };
-      if (target.isOwner) return { error: "Il fondatore dell'azienda resta sempre amministratore." };
+      if (target.isOwner && !isSupervisor) return { error: "Il direttore resta sempre amministratore." };
       if (target.role === role) return { ok: true };
 
       if (role === "ADMIN") {
@@ -95,7 +96,7 @@ export async function setEmployeeRole(employeeId: string, role: "ADMIN" | "EMPLO
 }
 
 export async function regenerateCode(employeeId: string): Promise<CodeResult> {
-  const { companyId, user } = await requireAdmin();
+  const { companyId, meId } = await requireAdmin();
   const target = await prisma.user.findFirst({
     where: { id: employeeId, companyId },
     select: { id: true, firstName: true, lastName: true },
@@ -108,7 +109,7 @@ export async function regenerateCode(employeeId: string): Promise<CodeResult> {
     return code;
   });
   // Il vecchio codice potrebbe essere in mano ad altri: chiude le sessioni aperte (tranne la propria).
-  if (target.id !== user.id) await prisma.session.deleteMany({ where: { userId: target.id } });
+  if (target.id !== meId) await prisma.session.deleteMany({ where: { userId: target.id } });
 
   return { ok: true, personalCode, name: `${target.firstName} ${target.lastName}` };
 }

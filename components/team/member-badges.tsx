@@ -4,7 +4,7 @@ export function MemberBadges({ role, isOwner, isMe }: { role: string; isOwner: b
   return (
     <span className="flex flex-wrap gap-1">
       {isOwner ? (
-        <Badge>Fondatore</Badge>
+        <Badge>Direttore</Badge>
       ) : (
         role === "ADMIN" && <Badge variant="secondary">Amministratore</Badge>
       )}

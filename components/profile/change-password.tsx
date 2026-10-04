@@ -7,11 +7,16 @@ import { Field } from "@/components/common/field";
 import { FormError } from "@/components/common/form-error";
 import { SubmitButton } from "@/components/common/submit-button";
 import { useFormAction } from "@/hooks/use-form-action";
+import type { ActionState } from "@/lib/action-state";
 
-export function ChangePasswordForm() {
+export function ChangePasswordForm({
+  action = changePassword,
+}: {
+  action?: (prev: ActionState, formData: FormData) => Promise<ActionState>;
+}) {
   const formRef = useRef<HTMLFormElement>(null);
   const { state, onSubmit, pending } = useFormAction(async (prev, formData) => {
-    const result = await changePassword(prev, formData);
+    const result = await action(prev, formData);
     if (result.ok) {
       toast.success("Password aggiornata");
       formRef.current?.reset();

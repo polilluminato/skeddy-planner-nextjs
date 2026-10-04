@@ -8,7 +8,7 @@ import { changePasswordSchema } from "@/lib/validation/auth";
 
 export async function changePassword(_prev: ActionState, formData: FormData): Promise<ActionState> {
   const { user, companyId } = await requireUser();
-  if (!user.passwordHash) return { error: "Il tuo account accede solo con i codici." };
+  if (!user?.passwordHash) return { error: "Il tuo account accede solo con i codici." };
 
   const parsed = changePasswordSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return { error: firstError(parsed.error) };

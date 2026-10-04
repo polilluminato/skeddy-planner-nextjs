@@ -10,6 +10,7 @@ import { ChangePasswordForm } from "@/components/profile/change-password";
 import { MemberBadges } from "@/components/team/member-badges";
 import { Button } from "@/components/ui/button";
 import { APP_TIME_ZONE } from "@/config/app";
+import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth/guards";
 import { addDays, startOfWeek, todayISO } from "@/lib/domain/dates";
 import { formatWeekRange } from "@/lib/domain/format";
@@ -20,6 +21,8 @@ export const metadata: Metadata = { title: "Profilo" };
 
 export default async function ProfilePage() {
   const { user, company, companyId } = await requireUser();
+  // L'Amministrazione ha il suo profilo nell'area dei team.
+  if (!user) redirect("/org");
   const weekStart = startOfWeek(todayISO(APP_TIME_ZONE));
   const shifts = await getShifts(companyId, weekStart, addDays(weekStart, 6), user.id);
   const members = new Map<string, CalendarMember>([[user.id, user]]);

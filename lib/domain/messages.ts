@@ -4,7 +4,14 @@ import { formatClock, formatLongDay } from "./format";
 
 export type MessageAuthor = { id: string; firstName: string; lastName: string; color: string };
 
-export type MessageRow = { id: string; body: string; createdAt: Date; author: MessageAuthor | null };
+export type MessageRow = {
+  id: string;
+  body: string;
+  createdAt: Date;
+  author: MessageAuthor | null;
+  /** Scritto dall'Amministrazione: non ha un autore tra i membri. */
+  fromOrganization: boolean;
+};
 
 export type TimelineItem =
   | { kind: "day"; key: string; label: string }
@@ -21,10 +28,13 @@ export type TimelineItem =
       mine: boolean;
     };
 
-/** Messaggi in ordine cronologico con un separatore a ogni cambio di giorno (nel fuso dell'app). */
+/**
+ * Messaggi in ordine cronologico con un separatore a ogni cambio di giorno (nel fuso dell'app).
+ * `meId` è null per l'Amministrazione (`isSupervisor`), per cui "miei" sono i messaggi dell'organizzazione.
+ */
 export function buildTimeline(
   messages: MessageRow[],
-  { meId, now = new Date() }: { meId: string; now?: Date },
+  { meId, isSupervisor = false, now = new Date() }: { meId: string | null; isSupervisor?: boolean; now?: Date },
 ): TimelineItem[] {
   const today = todayISO(APP_TIME_ZONE, now);
   const yesterday = addDays(today, -1);
@@ -45,9 +55,13 @@ export function buildTimeline(
       body: m.body,
       sentAt: m.createdAt.toISOString(),
       time: formatClock(m.createdAt),
-      authorName: m.author ? `${m.author.firstName} ${m.author.lastName}` : "Ex amministratore",
+      authorName: m.fromOrganization
+        ? "Amministrazione"
+        : m.author
+          ? `${m.author.firstName} ${m.author.lastName}`
+          : "Ex amministratore",
       authorColor: m.author?.color ?? null,
-      mine: m.author?.id === meId,
+      mine: m.fromOrganization ? isSupervisor : m.author !== null && m.author.id === meId,
     });
   }
   return items;

@@ -32,6 +32,9 @@ export default async function SuperAdminHome() {
                 <span className="grid min-w-0 flex-1 gap-0.5">
                   <span className="truncate font-medium">{c.name}</span>
                   <span className="truncate font-mono text-xs text-muted-foreground">{c.code}</span>
+                  {c.organization && (
+                    <span className="truncate text-xs text-muted-foreground">Amministrazione: {c.organization.name}</span>
+                  )}
                   <span className="text-xs text-muted-foreground">
                     {c._count.users} persone · {c._count.shifts} turni · dal {dateFmt.format(c.createdAt)}
                   </span>

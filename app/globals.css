@@ -13,12 +13,12 @@
   }
 }
 
-/* Brand da `docs/design.md` (stile Cal.com): monocromo, nero come unico colore d'azione, Cal Sans per i titoli. */
+/* Brand da `docs/design.md` (stile Cal.com): monocromo, nero come unico colore d'azione, Inter anche per i titoli. */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-inter);
-  --font-heading: var(--font-cal-sans), var(--font-inter);
+  --font-heading: var(--font-inter);
   --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
   --color-ring: var(--ring);
   --color-input: var(--input);
@@ -126,14 +126,12 @@
   }
   html {
     @apply font-sans;
-    /* Cal Sans ha un solo peso: niente grassetto finto su `font-semibold`. */
-    font-synthesis-weight: none;
     -webkit-tap-highlight-color: transparent;
   }
   body {
     @apply bg-background text-foreground text-base;
   }
-  /* Titoli di pagina in Cal Sans con tracking negativo; il resto resta Inter. */
+  /* Titoli di pagina con tracking negativo. */
   h1 {
     @apply font-heading tracking-tight;
   }

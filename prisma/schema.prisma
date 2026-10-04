@@ -12,15 +12,32 @@ enum Role {
   EMPLOYEE
 }
 
-model Company {
-  id        String   @id @default(cuid())
-  name      String
-  code      String   @unique
-  createdAt DateTime @default(now())
+/// Account "Amministrazione": crea e gestisce più team (Company). Non è un User.
+model Organization {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
 
-  users    User[]
-  shifts   Shift[]
-  messages Message[]
+  companies Company[]
+  sessions  Session[]
+}
+
+model Company {
+  id             String   @id @default(cuid())
+  /// null per le aziende singole
+  organizationId String?
+  name           String
+  code           String   @unique
+  createdAt      DateTime @default(now())
+
+  organization Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  users        User[]
+  shifts       Shift[]
+  messages     Message[]
+
+  @@index([organizationId])
 }
 
 model User {
@@ -69,12 +86,14 @@ model Shift {
 
 /// Notifica scritta da un amministratore per tutta l'azienda
 model Message {
-  id        String   @id @default(cuid())
-  companyId String
-  /// null se l'autore è stato eliminato
-  authorId  String?
-  body      String
-  createdAt DateTime @default(now())
+  id               String   @id @default(cuid())
+  companyId        String
+  /// null se l'autore è stato eliminato o se scrive l'Amministrazione
+  authorId         String?
+  /// Scritto dall'Amministrazione (organizzazione) del team
+  fromOrganization Boolean  @default(false)
+  body             String
+  createdAt        DateTime @default(now())
 
   company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
   author  User?   @relation(fields: [authorId], references: [id], onDelete: SetNull)
@@ -83,16 +102,21 @@ model Message {
 }
 
 model Session {
-  id           String   @id @default(cuid())
-  tokenHash    String   @unique
-  userId       String?
-  isSuperAdmin Boolean  @default(false)
-  expiresAt    DateTime
-  createdAt    DateTime @default(now())
+  id              String   @id @default(cuid())
+  tokenHash       String   @unique
+  userId          String?
+  organizationId  String?
+  /// Team su cui sta operando l'Amministrazione
+  activeCompanyId String?
+  isSuperAdmin    Boolean  @default(false)
+  expiresAt       DateTime
+  createdAt       DateTime @default(now())
 
-  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User?         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+  @@index([organizationId])
 }
 
 model LoginAttempt {

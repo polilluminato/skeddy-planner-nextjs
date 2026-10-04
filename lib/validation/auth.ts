@@ -3,17 +3,31 @@ import { normalizeCompanyCode } from "@/lib/domain/company-code";
 import { isValidPersonalCode, normalizePersonalCode } from "@/lib/domain/personal-code";
 import { emailField, nameField, passwordField } from "./fields";
 
+export const companyNameField = z
+  .string({ error: "Nome azienda obbligatorio." })
+  .trim()
+  .min(2, "Il nome dell'azienda deve avere almeno 2 caratteri.")
+  .max(80, "Nome azienda: massimo 80 caratteri.");
+
 export const signupSchema = z.object({
-  companyName: z
-    .string({ error: "Nome azienda obbligatorio." })
-    .trim()
-    .min(2, "Il nome dell'azienda deve avere almeno 2 caratteri.")
-    .max(80, "Nome azienda: massimo 80 caratteri."),
+  companyName: companyNameField,
   firstName: nameField("Nome"),
   lastName: nameField("Cognome"),
   email: emailField,
   password: passwordField,
 });
+
+/** Iscrizione dell'Amministrazione: l'organizzazione e il suo primo negozio. */
+export const organizationSignupSchema = z.object({
+  organizationName: companyNameField,
+  companyName: companyNameField,
+  email: emailField,
+  password: passwordField,
+});
+
+export const createCompanySchema = z.object({ companyName: companyNameField });
+
+export const renameOrganizationSchema = z.object({ organizationName: companyNameField });
 
 export const codeLoginSchema = z.object({
   companyCode: z

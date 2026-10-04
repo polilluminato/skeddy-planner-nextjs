@@ -19,14 +19,19 @@ function cookieOptions(expires: Date) {
   };
 }
 
-export async function createSession(target: { userId: string } | { superAdmin: true }): Promise<void> {
+type SessionTarget =
+  | { userId: string }
+  | { organizationId: string; activeCompanyId?: string }
+  | { superAdmin: true };
+
+export async function createSession(target: SessionTarget): Promise<void> {
   const token = randomToken();
   const expiresAt = new Date(Date.now() + SESSION_DAYS * DAY_MS);
   await prisma.session.create({
     data: {
       tokenHash: sha256(token),
       expiresAt,
-      ...("userId" in target ? { userId: target.userId } : { isSuperAdmin: true }),
+      ...("superAdmin" in target ? { isSuperAdmin: true } : target),
     },
   });
   (await cookies()).set(SESSION_COOKIE, token, cookieOptions(expiresAt));
@@ -45,7 +50,10 @@ export const getSession = cache(async () => {
 
   const session = await prisma.session.findUnique({
     where: { tokenHash: sha256(token) },
-    include: { user: { include: { company: true } } },
+    include: {
+      user: { include: { company: true } },
+      organization: { include: { companies: { orderBy: { name: "asc" } } } },
+    },
   });
   if (!session) return null;
 

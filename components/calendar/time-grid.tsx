@@ -28,7 +28,8 @@ type Props = {
   hours: HourRange;
   shifts: CalendarShift[];
   members: CalendarMember[];
-  currentUserId: string;
+  /** null per l'Amministrazione, che non ha turni */
+  currentUserId: string | null;
   canEdit: boolean;
   /** Minuti trascorsi da mezzanotte nel fuso dell'app, per la linea "adesso". */
   nowMinutes: number;

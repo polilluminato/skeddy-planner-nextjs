@@ -6,8 +6,9 @@ import { requireUser } from "@/lib/auth/guards";
 import { countUnreadMessages } from "@/lib/queries";
 
 export default async function AppLayout({ children }: LayoutProps<"/">) {
-  const { user, companyId, isAdmin } = await requireUser();
-  const unread = await countUnreadMessages(companyId, user.messagesReadAt);
+  const { user, company, companyId, isAdmin, isSupervisor } = await requireUser();
+  // L'Amministrazione scrive i messaggi ma non ha uno stato di lettura.
+  const unread = user ? await countUnreadMessages(companyId, user.messagesReadAt) : 0;
   const collapsed = (await cookies()).get(SIDEBAR_COOKIE)?.value === "collapsed";
   return (
     // Solo gli admin hanno la vista desktop con sidebar (variante `desktop:`); i dipendenti restano sempre mobile.
@@ -16,7 +17,12 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
       className="min-h-dvh pb-[calc(3.5rem+env(safe-area-inset-bottom))] desktop:pb-0 desktop:pl-60 desktop:has-[nav[data-sidebar-collapsed]]:pl-16"
     >
       {children}
-      <AppNav isAdmin={isAdmin} unread={unread} defaultCollapsed={collapsed} />
+      <AppNav
+        isAdmin={isAdmin}
+        unread={unread}
+        defaultCollapsed={collapsed}
+        activeTeam={isSupervisor ? company.name : undefined}
+      />
       {/* Riaprendo la PWA si riprendono turni e messaggi non letti. */}
       <AutoRefresh onVisible />
     </div>

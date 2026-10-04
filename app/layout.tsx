@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Cal_Sans, Inter, JetBrains_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Telemetry } from "@/components/common/telemetry";
 import { APP_DESCRIPTION, APP_NAME, APP_SHORT_NAME } from "@/config/app";
@@ -7,7 +7,6 @@ import { Providers } from "./providers";
 import "./globals.css";
 
 const inter = Inter({ variable: "--font-inter", subsets: ["latin"], display: "swap" });
-const calSans = Cal_Sans({ variable: "--font-cal-sans", weight: "400", subsets: ["latin"], display: "swap", adjustFontFallback: false });
 const jetbrainsMono = JetBrains_Mono({ variable: "--font-jetbrains-mono", subsets: ["latin"], display: "swap" });
 
 export const metadata: Metadata = {
@@ -31,7 +30,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   const telemetryAppId = process.env.TELEMETRY_DECK_APP_ID;
   return (
-    <html lang="it" className={`${inter.variable} ${calSans.variable} ${jetbrainsMono.variable} h-full antialiased`} suppressHydrationWarning>
+    <html lang="it" className={`${inter.variable} ${jetbrainsMono.variable} h-full antialiased`} suppressHydrationWarning>
       <body className="min-h-dvh">
         <Providers>{children}</Providers>
         {telemetryAppId && (

@@ -11,7 +11,7 @@ import { getMessages } from "@/lib/queries";
 export const metadata: Metadata = { title: "Messaggi" };
 
 export default async function MessagesPage({ searchParams }: PageProps<"/messages">) {
-  const { user, company, companyId, isAdmin } = await requireUser();
+  const { user, meId, isSupervisor, company, companyId, isAdmin } = await requireUser();
   const limit = parseMessageLimit((await searchParams).n);
   const { messages, hasMore } = await getMessages(companyId, limit);
 
@@ -21,8 +21,8 @@ export default async function MessagesPage({ searchParams }: PageProps<"/message
       {/* Altezza del viewport meno header e bottom nav (solo header con la sidebar): pochi messaggi restano in basso, come in una chat. */}
       <div className="mx-auto flex min-h-[calc(100dvh-7rem-env(safe-area-inset-top)-env(safe-area-inset-bottom))] max-w-2xl desktop:min-h-[calc(100dvh-3.5rem-env(safe-area-inset-top))] desktop:max-w-none flex-col">
         <MessageThread
-          items={buildTimeline(messages, { meId: user.id })}
-          firstUnreadId={firstUnreadId(messages, user.messagesReadAt, user.id)}
+          items={buildTimeline(messages, { meId, isSupervisor })}
+          firstUnreadId={user && firstUnreadId(messages, user.messagesReadAt, user.id)}
           olderHref={hasMore ? `/messages?n=${limit + MESSAGES_PAGE_SIZE}` : null}
           isAdmin={isAdmin}
         />

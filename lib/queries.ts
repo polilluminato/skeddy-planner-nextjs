@@ -30,9 +30,35 @@ export async function getShifts(companyId: string, from: ISODate, to: ISODate, u
   return rows.map((s) => ({ ...s, date: fromUTCDate(s.date) }));
 }
 
+/** Negozi dell'organizzazione con persone e turni dell'intervallo, per il riepilogo dell'Amministrazione. */
+export async function getOrganizationOverview(organizationId: string, from: ISODate, to: ISODate) {
+  const companies = await prisma.company.findMany({
+    where: { organizationId },
+    select: {
+      id: true,
+      name: true,
+      code: true,
+      users: { select: { id: true, weeklyMinutes: true } },
+      shifts: {
+        where: { date: { gte: toUTCDate(from), lte: toUTCDate(to) } },
+        select: { userId: true, date: true, start: true, end: true },
+      },
+    },
+    orderBy: { name: "asc" },
+  });
+  return companies.map((c) => ({ ...c, shifts: c.shifts.map((s) => ({ ...s, date: fromUTCDate(s.date) })) }));
+}
+
 export function getCompaniesOverview() {
   return prisma.company.findMany({
-    select: { id: true, name: true, code: true, createdAt: true, _count: { select: { users: true, shifts: true } } },
+    select: {
+      id: true,
+      name: true,
+      code: true,
+      createdAt: true,
+      organization: { select: { name: true } },
+      _count: { select: { users: true, shifts: true } },
+    },
     orderBy: { createdAt: "desc" },
   });
 }
@@ -58,6 +84,7 @@ export async function getMessages(companyId: string, limit: number) {
       id: true,
       body: true,
       createdAt: true,
+      fromOrganization: true,
       author: { select: { id: true, firstName: true, lastName: true, color: true } },
     },
     orderBy: [{ createdAt: "desc" }, { id: "desc" }],

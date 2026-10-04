@@ -11,7 +11,16 @@ import { createSession, destroySession } from "@/lib/auth/session";
 import { checkSuperAdmin } from "@/lib/auth/superadmin";
 import { retryOnUnique } from "@/lib/db-errors";
 import { prisma } from "@/lib/prisma";
-import { codeLoginSchema, emailLoginSchema, signupSchema } from "@/lib/validation/auth";
+import { codeLoginSchema, emailLoginSchema, organizationSignupSchema, signupSchema } from "@/lib/validation/auth";
+
+/** Le email di accesso sono uniche tra utenti e organizzazioni: il login le cerca in entrambe. */
+async function emailTaken(email: string) {
+  const [user, organization] = await Promise.all([
+    prisma.user.findUnique({ where: { email }, select: { id: true } }),
+    prisma.organization.findUnique({ where: { email }, select: { id: true } }),
+  ]);
+  return Boolean(user || organization);
+}
 
 export type SignupResult = ActionState<{ companyCode: string; personalCode: string }>;
 
@@ -20,9 +29,7 @@ export async function signup(_prev: SignupResult, formData: FormData): Promise<S
   if (!parsed.success) return { error: firstError(parsed.error) };
   const { companyName, firstName, lastName, email, password } = parsed.data;
 
-  if (await prisma.user.findUnique({ where: { email }, select: { id: true } })) {
-    return { error: "Esiste già un account con questa email." };
-  }
+  if (await emailTaken(email)) return { error: "Esiste già un account con questa email." };
 
   const passwordHash = await hashPassword(password);
   try {
@@ -56,6 +63,32 @@ export async function signup(_prev: SignupResult, formData: FormData): Promise<S
     console.error("signup failed", error);
     return { error: "Registrazione non riuscita. Riprova." };
   }
+}
+
+export async function signupOrganization(_prev: ActionState, formData: FormData): Promise<ActionState> {
+  const parsed = organizationSignupSchema.safeParse(Object.fromEntries(formData));
+  if (!parsed.success) return { error: firstError(parsed.error) };
+  const { organizationName, companyName, email, password } = parsed.data;
+
+  if (await emailTaken(email)) return { error: "Esiste già un account con questa email." };
+
+  const passwordHash = await hashPassword(password);
+  let target: { organizationId: string; activeCompanyId: string };
+  try {
+    target = await retryOnUnique(async () => {
+      const org = await prisma.organization.create({
+        data: { name: organizationName, email, passwordHash, companies: { create: { name: companyName, code: generateCompanyCode() } } },
+        select: { id: true, companies: { select: { id: true } } },
+      });
+      return { organizationId: org.id, activeCompanyId: org.companies[0].id };
+    });
+  } catch (error) {
+    console.error("organization signup failed", error);
+    return { error: "Registrazione non riuscita. Riprova." };
+  }
+  await createSession(target);
+  // Il primo negozio è vuoto: si parte creando le persone (e il primo amministratore).
+  redirect("/team");
 }
 
 export async function loginWithCodes(_prev: ActionState, formData: FormData): Promise<ActionState> {
@@ -93,16 +126,24 @@ export async function loginWithEmail(_prev: ActionState, formData: FormData): Pr
   const locked = await lockMessage(key);
   if (locked) return { error: locked };
 
-  const user = await prisma.user.findUnique({ where: { email }, select: { id: true, passwordHash: true } });
-  const valid = await verifyPassword(password, user?.passwordHash ?? DUMMY_HASH);
-  if (!user?.passwordHash || !valid) {
+  const [user, organization] = await Promise.all([
+    prisma.user.findUnique({ where: { email }, select: { id: true, passwordHash: true } }),
+    prisma.organization.findUnique({ where: { email }, select: { id: true, passwordHash: true } }),
+  ]);
+  const passwordHash = user?.passwordHash ?? organization?.passwordHash;
+  const valid = await verifyPassword(password, passwordHash ?? DUMMY_HASH);
+  if (!passwordHash || !valid) {
     await registerFailure(key);
     return { error: "Email o password non corrette." };
   }
 
   await clearAttempts(key);
-  await createSession({ userId: user.id });
-  redirect("/calendar");
+  if (user) {
+    await createSession({ userId: user.id });
+    redirect("/calendar");
+  }
+  await createSession({ organizationId: organization!.id });
+  redirect("/org");
 }
 
 export async function logout(): Promise<void> {

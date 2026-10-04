@@ -5,7 +5,8 @@ import type { CalendarMember, CalendarShift } from "./types";
 export type DayListProps = {
   shifts: CalendarShift[];
   members: Map<string, CalendarMember>;
-  currentUserId: string;
+  /** null per l'Amministrazione, che non ha turni */
+  currentUserId: string | null;
   canEdit: boolean;
 };
 

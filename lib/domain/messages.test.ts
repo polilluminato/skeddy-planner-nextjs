@@ -9,6 +9,7 @@ const msg = (id: string, iso: string, author: MessageRow["author"] = ada): Messa
   body: `testo ${id}`,
   createdAt: new Date(iso),
   author,
+  fromOrganization: false,
 });
 
 describe("buildTimeline", () => {
@@ -43,6 +44,19 @@ describe("buildTimeline", () => {
     });
     expect(a).toMatchObject({ time: "09:15", authorName: "Ada Rossi", authorColor: "#5645d4", mine: true });
     expect(b).toMatchObject({ authorName: "Ex amministratore", authorColor: null, mine: false });
+  });
+
+  it("attribuisce all'Amministrazione i suoi messaggi", () => {
+    const org = { ...msg("o", "2026-10-02T07:15:00Z", null), fromOrganization: true };
+    const [, forUser] = buildTimeline([org], { meId: "u1", now });
+    expect(forUser).toMatchObject({ authorName: "Amministrazione", mine: false });
+    const [, forOrg, , ada] = buildTimeline([org, msg("a", "2026-10-03T07:15:00Z")], {
+      meId: null,
+      isSupervisor: true,
+      now,
+    });
+    expect(forOrg).toMatchObject({ authorName: "Amministrazione", mine: true });
+    expect(ada).toMatchObject({ mine: false });
   });
 });
 

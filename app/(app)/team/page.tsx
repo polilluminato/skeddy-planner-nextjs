@@ -17,7 +17,7 @@ import { getShifts, getTeam } from "@/lib/queries";
 export const metadata: Metadata = { title: "Team" };
 
 export default async function TeamPage() {
-  const { user, company, companyId } = await requireAdmin();
+  const { meId, company, companyId } = await requireAdmin();
   const weekStart = startOfWeek(todayISO(APP_TIME_ZONE));
   const [team, shifts] = await Promise.all([
     getTeam(companyId),
@@ -66,7 +66,7 @@ export default async function TeamPage() {
                   >
                     <span className="grid min-w-0 flex-1 justify-items-start gap-1">
                       <MemberChip name={`${m.firstName} ${m.lastName}`} color={m.color} />
-                      <MemberBadges role={m.role} isOwner={m.isOwner} isMe={m.id === user.id} />
+                      <MemberBadges role={m.role} isOwner={m.isOwner} isMe={m.id === meId} />
                       <span className="flex flex-wrap items-baseline gap-x-2">
                         <span className="text-sm tabular-nums">
                           {formatMinutes(row.planned)}

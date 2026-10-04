@@ -34,7 +34,7 @@ export default async function LoginPage() {
         <TabsContent value="email">
           <EmailLoginForm />
           <p className="mt-3 text-xs text-muted-foreground">
-            Solo per chi ha registrato l&apos;azienda. Tutti possono entrare con i codici.
+            Per chi ha registrato l&apos;azienda e per l&apos;Amministrazione. Tutti i dipendenti entrano con i codici.
           </p>
         </TabsContent>
       </Tabs>

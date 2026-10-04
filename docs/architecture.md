@@ -74,6 +74,7 @@ Regola: `app/` contiene solo routing e composizione; la logica sta in `lib/`, le
 - **Guard server** (`lib/auth/guards.ts`): una funzione per livello (`requireUser`, `requireAdmin`, `requireSuperAdmin`, …). Si chiamano in ogni pagina, layout e Server Action; fanno `redirect` verso l'area corretta. Un ruolo con UI ristretta si isola facendo reindirizzare `requireUser` fuori dall'area standard.
 - **Ruoli** come enum Prisma; i vincoli (es. numero massimo di admin) si verificano nell'azione, non solo nella UI.
 - **Super admin** definito da variabili d'ambiente, in sola lettura, con area e login separati.
+- **Amministrazione** (`Organization`): account email/password sopra gli admin, possiede più `Company` (`Company.organizationId`, null per le aziende singole). Non è un `User`: la sessione porta `organizationId` e il team attivo (`activeCompanyId`), che `requireUser` valida contro i team dell'organizzazione e restituisce come `companyId` con poteri da admin, `user`/`meId` null e `isSupervisor`. Senza team attivo valido si va in `/org` (scelta e creazione dei negozi, `requireSupervisor`). Le pagine usano `meId`, mai `user.id`, per ciò che riguarda "me".
 
 ## 5. Mutazioni: pipeline delle Server Actions
 

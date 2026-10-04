@@ -4,11 +4,13 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  ArrowLeftRightIcon,
   CalendarDaysIcon,
   LogOutIcon,
   MessagesSquareIcon,
   PanelLeftCloseIcon,
   PanelLeftOpenIcon,
+  StoreIcon,
   UserRoundIcon,
   UsersRoundIcon,
 } from "lucide-react";
@@ -24,6 +26,8 @@ const ITEMS = [
   { href: "/team", label: "Team", icon: UsersRoundIcon, adminOnly: true },
   { href: "/profile", label: "Profilo", icon: UserRoundIcon, adminOnly: false },
 ];
+// L'Amministrazione non ha un profilo nel team: al suo posto la scelta del negozio.
+const SWITCH_ITEM = { href: "/org", label: "Negozi", icon: StoreIcon, adminOnly: true };
 
 /**
  * Navigazione principale: bottom nav su mobile; per gli admin, da desktop,
@@ -34,14 +38,19 @@ export function AppNav({
   isAdmin,
   unread,
   defaultCollapsed,
+  activeTeam,
 }: {
   isAdmin: boolean;
   unread: number;
   defaultCollapsed: boolean;
+  /** Solo per l'Amministrazione: il team su cui sta operando. */
+  activeTeam?: string;
 }) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(defaultCollapsed);
-  const items = ITEMS.filter((item) => isAdmin || !item.adminOnly);
+  const items = activeTeam
+    ? ITEMS.map((item) => (item.href === "/profile" ? SWITCH_ITEM : item))
+    : ITEMS.filter((item) => isAdmin || !item.adminOnly);
 
   function toggle() {
     const next = !collapsed;
@@ -76,6 +85,23 @@ export function AppNav({
           {collapsed ? <PanelLeftOpenIcon className="size-5" aria-hidden /> : <PanelLeftCloseIcon className="size-5" aria-hidden />}
         </button>
       </div>
+      {activeTeam && (
+        <Link
+          href="/org"
+          title={collapsed ? `Negozio: ${activeTeam}. Cambia negozio` : undefined}
+          className={cn(
+            "mt-2 hidden min-h-11 items-center gap-3 rounded-lg border text-sm transition-colors hover:bg-accent desktop:flex",
+            collapsed ? "mx-2 justify-center" : "mx-3 px-3",
+          )}
+        >
+          <StoreIcon className="size-5 shrink-0 text-muted-foreground" aria-hidden />
+          <span className={cn("grid min-w-0 flex-1 py-1.5", collapsed && "sr-only")}>
+            <span className="text-xs text-muted-foreground">Negozio</span>
+            <span className="truncate font-medium">{activeTeam}</span>
+          </span>
+          {!collapsed && <ArrowLeftRightIcon className="size-4 shrink-0 text-muted-foreground" aria-hidden />}
+        </Link>
+      )}
       <ul className={cn("mx-auto flex max-w-2xl desktop:mx-0 desktop:mt-2 desktop:max-w-none desktop:flex-col desktop:gap-1", collapsed ? "desktop:px-2" : "desktop:px-3")}>
         {items.map(({ href, label, icon: Icon }) => {
           const active = pathname === href || pathname.startsWith(`${href}/`);

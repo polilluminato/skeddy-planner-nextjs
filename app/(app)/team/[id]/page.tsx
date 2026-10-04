@@ -24,7 +24,7 @@ import { getShifts, getTeam } from "@/lib/queries";
 export const metadata: Metadata = { title: "Dipendente" };
 
 export default async function MemberPage({ params, searchParams }: PageProps<"/team/[id]">) {
-  const { user, company, companyId } = await requireAdmin();
+  const { meId, isSupervisor, company, companyId } = await requireAdmin();
   const { id } = await params;
   const { week } = await searchParams;
   const today = todayISO(APP_TIME_ZONE);
@@ -38,7 +38,7 @@ export default async function MemberPage({ params, searchParams }: PageProps<"/t
   const byDate = groupByDate(shifts);
   const members = new Map<string, CalendarMember>([[member.id, member]]);
   const name = `${member.firstName} ${member.lastName}`;
-  const isMe = member.id === user.id;
+  const isMe = member.id === meId;
   const adminCount = team.filter((m) => m.role === "ADMIN").length;
   const weekHref = (d: string) => `/team/${member.id}?week=${d}`;
 
@@ -121,7 +121,7 @@ export default async function MemberPage({ params, searchParams }: PageProps<"/t
                   isToday={day === today}
                   shifts={byDate.get(day) ?? []}
                   members={members}
-                  currentUserId={user.id}
+                  currentUserId={meId}
                   canEdit
                   defaultUserId={member.id}
                 />
@@ -137,7 +137,7 @@ export default async function MemberPage({ params, searchParams }: PageProps<"/t
               Accesso e permessi
             </h2>
             <RegenerateCode employeeId={member.id} name={name} />
-            {!member.isOwner && !isMe && (
+            {(!member.isOwner || isSupervisor) && !isMe && (
               <>
                 <RoleAction
                   employeeId={member.id}
@@ -148,9 +148,9 @@ export default async function MemberPage({ params, searchParams }: PageProps<"/t
                 <DeleteMember employeeId={member.id} name={name} />
               </>
             )}
-            {member.isOwner && (
+            {member.isOwner && !isSupervisor && (
               <p className="text-sm text-muted-foreground">
-                Il fondatore resta sempre amministratore e non può essere eliminato.
+                Il direttore resta sempre amministratore e non può essere eliminato.
               </p>
             )}
           </section>
