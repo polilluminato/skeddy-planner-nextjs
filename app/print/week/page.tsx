@@ -5,7 +5,6 @@ import { APP_TIME_ZONE } from "@/config/app";
 import { requireAdmin } from "@/lib/auth/guards";
 import { addDays, isISODate, startOfWeek, todayISO, weekDays } from "@/lib/domain/dates";
 import { dayOfMonth, formatShortWeekday, formatWeekRange } from "@/lib/domain/format";
-import { formatMinutes, shiftMinutes } from "@/lib/domain/shifts";
 import { getShifts, getTeam } from "@/lib/queries";
 
 export const metadata: Metadata = { title: "Stampa settimana" };
@@ -15,8 +14,8 @@ export default async function PrintWeekPage({ searchParams }: PageProps<"/print/
   const { company, companyId } = await requireAdmin();
   const { date } = await searchParams;
   const weekStart = startOfWeek(typeof date === "string" && isISODate(date) ? date : todayISO(APP_TIME_ZONE));
-  const days = weekDays(weekStart);
   const [team, shifts] = await Promise.all([getTeam(companyId), getShifts(companyId, weekStart, addDays(weekStart, 6))]);
+  const days = weekDays(weekStart).filter((day) => shifts.some((s) => s.date === day));
 
   return (
     // Sempre chiaro: in stampa lo sfondo scuro non esce e il testo chiaro sparirebbe.
@@ -41,35 +40,36 @@ export default async function PrintWeekPage({ searchParams }: PageProps<"/print/
                 {formatShortWeekday(day)} {dayOfMonth(day)}
               </th>
             ))}
-            <th scope="col" className="w-20 border border-neutral-400 p-2 text-right">
-              Ore
-            </th>
           </tr>
         </thead>
         <tbody>
           {team.map((m) => {
             const own = shifts.filter((s) => s.userId === m.id);
-            const total = own.reduce((sum, s) => sum + shiftMinutes(s), 0);
             return (
               <tr key={m.id} className="break-inside-avoid">
                 <th scope="row" className="border border-neutral-400 p-2 text-left align-top font-medium">
-                  <MemberChip name={`${m.firstName} ${m.lastName}`} color={m.color} />
+                  <MemberChip name={m.lastName ? `${m.firstName} ${m.lastName[0]}.` : m.firstName} color={m.color} />
                 </th>
-                {days.map((day) => (
-                  <td key={day} className="border border-neutral-400 p-2 align-top">
-                    {own
-                      .filter((s) => s.date === day)
-                      .map((s) => (
-                        <p key={s.id} className="tabular-nums">
-                          {s.start}–{s.end}
-                          {s.note && <span className="block text-xs text-neutral-600">{s.note}</span>}
-                        </p>
-                      ))}
-                  </td>
-                ))}
-                <td className="border border-neutral-400 p-2 text-right align-top tabular-nums">
-                  {total > 0 ? formatMinutes(total) : "–"}
-                </td>
+                {days.map((day) => {
+                  const dayShifts = own.filter((s) => s.date === day);
+                  return (
+                    <td key={day} className="relative border border-neutral-400 p-2 align-top">
+                      {dayShifts.length === 0 ? (
+                        // SVG e non sfondo CSS: i browser non stampano gli sfondi di default.
+                        <svg aria-hidden className="absolute inset-0 size-full" preserveAspectRatio="none" viewBox="0 0 1 1">
+                          <path d="M0 0L1 1M1 0L0 1" stroke="#a3a3a3" strokeWidth={1} vectorEffect="non-scaling-stroke" />
+                        </svg>
+                      ) : (
+                        dayShifts.map((s) => (
+                          <p key={s.id} className="tabular-nums">
+                            {s.start}–{s.end}
+                            {s.note && <span className="block text-xs text-neutral-600">{s.note}</span>}
+                          </p>
+                        ))
+                      )}
+                    </td>
+                  );
+                })}
               </tr>
             );
           })}
