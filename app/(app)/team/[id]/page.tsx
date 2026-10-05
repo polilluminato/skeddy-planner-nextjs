@@ -90,11 +90,33 @@ export default async function MemberPage({ params, searchParams }: PageProps<"/t
                 }}
               />
             </div>
+            <div className="grid gap-2 border-t pt-3">
+              <h2 className="mb-1 font-semibold">
+                Accesso e permessi
+              </h2>
+              <RegenerateCode employeeId={member.id} name={name} />
+              {(!member.isOwner || isSupervisor) && !isMe && (
+                <>
+                  <RoleAction
+                    employeeId={member.id}
+                    name={name}
+                    role={member.role}
+                    canPromote={adminCount < MAX_ADMINS}
+                  />
+                  <DeleteMember employeeId={member.id} name={name} />
+                </>
+              )}
+              {member.isOwner && !isSupervisor && (
+                <p className="text-sm text-muted-foreground">
+                  Il direttore resta sempre amministratore e non può essere eliminato.
+                </p>
+              )}
+            </div>
           </section>
 
           <section
             aria-labelledby="week-title"
-            className="grid gap-3 desktop:lg:col-span-2 desktop:lg:col-start-2 desktop:lg:row-span-2 desktop:lg:row-start-2"
+            className="grid gap-3 desktop:lg:col-span-2 desktop:lg:col-start-2 desktop:lg:row-start-2"
           >
             <div className="flex items-center gap-1">
               <Button asChild variant="ghost" size="icon" className="size-11">
@@ -127,32 +149,6 @@ export default async function MemberPage({ params, searchParams }: PageProps<"/t
                 />
               ))}
             </div>
-          </section>
-
-          <section
-            aria-labelledby="actions-title"
-            className="grid gap-2 rounded-xl border bg-card p-4 desktop:lg:col-start-1"
-          >
-            <h2 id="actions-title" className="mb-1 font-semibold">
-              Accesso e permessi
-            </h2>
-            <RegenerateCode employeeId={member.id} name={name} />
-            {(!member.isOwner || isSupervisor) && !isMe && (
-              <>
-                <RoleAction
-                  employeeId={member.id}
-                  name={name}
-                  role={member.role}
-                  canPromote={adminCount < MAX_ADMINS}
-                />
-                <DeleteMember employeeId={member.id} name={name} />
-              </>
-            )}
-            {member.isOwner && !isSupervisor && (
-              <p className="text-sm text-muted-foreground">
-                Il direttore resta sempre amministratore e non può essere eliminato.
-              </p>
-            )}
           </section>
         </main>
       </ShiftEditorProvider>

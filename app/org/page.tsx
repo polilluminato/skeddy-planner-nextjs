@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { ChevronRightIcon } from "lucide-react";
 import { changeOrganizationPassword, renameOrganization, selectCompany } from "@/actions/organization";
-import { CreateCompanyForm } from "@/components/org/create-company";
+import { CreateCompany } from "@/components/org/create-company";
 import { RenameCompany } from "@/components/org/rename-company";
 import { RenameForm } from "@/components/org/rename-form";
-import { ChangePasswordForm } from "@/components/profile/change-password";
+import { ChangePassword } from "@/components/profile/change-password";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { APP_TIME_ZONE } from "@/config/app";
@@ -24,14 +24,39 @@ export default async function OrganizationPage() {
 
   return (
     <>
-      <section aria-labelledby="teams-title" className="grid gap-4">
-        <div className="grid gap-1">
-          <h1 id="teams-title" className="text-2xl font-semibold tracking-tight">
-            Negozi
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Scegli il negozio su cui lavorare · ore della settimana {formatWeekRange(weekStart)}
-          </p>
+      <h1 className="sr-only">Negozi</h1>
+
+      <section aria-labelledby="account-title" className="grid gap-3 rounded-xl border bg-card p-4">
+        <div className="grid gap-0.5">
+          <h2 id="account-title" className="font-semibold">
+            Account
+          </h2>
+          <p className="truncate text-sm text-muted-foreground">{organization.email}</p>
+        </div>
+        <RenameForm
+          key={organization.name}
+          label="Nome dell'organizzazione"
+          name="organizationName"
+          defaultValue={organization.name}
+          action={renameOrganization}
+        />
+        <div className="grid gap-2 border-t pt-3">
+          <h3 className="mb-1 font-semibold">Accesso e permessi</h3>
+          <ChangePassword action={changeOrganizationPassword} />
+        </div>
+      </section>
+
+      <section aria-labelledby="teams-title" className="col-span-2 grid gap-2">
+        <div className="flex items-end justify-between gap-3">
+          <div className="grid gap-0.5">
+            <h2 id="teams-title" className="font-semibold">
+              Negozi ({companies.length})
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              Scegli il negozio su cui lavorare · ore della settimana {formatWeekRange(weekStart)}
+            </p>
+          </div>
+          <CreateCompany />
         </div>
         <div className="overflow-hidden rounded-xl border bg-card">
           <table className="w-full text-sm">
@@ -84,34 +109,6 @@ export default async function OrganizationPage() {
           </table>
         </div>
       </section>
-
-      <aside className="grid gap-5">
-        <section aria-labelledby="new-team-title" className="grid gap-3 rounded-xl border bg-card p-4">
-          <h2 id="new-team-title" className="font-semibold">
-            Nuovo negozio
-          </h2>
-          <CreateCompanyForm />
-        </section>
-
-        <section aria-labelledby="account-title" className="grid gap-3 rounded-xl border bg-card p-4">
-          <div className="grid gap-0.5">
-            <h2 id="account-title" className="font-semibold">
-              Account
-            </h2>
-            <p className="truncate text-sm text-muted-foreground">{organization.email}</p>
-          </div>
-          <RenameForm
-            key={organization.name}
-            label="Nome dell'organizzazione"
-            name="organizationName"
-            defaultValue={organization.name}
-            action={renameOrganization}
-          />
-          <div className="border-t pt-3">
-            <ChangePasswordForm action={changeOrganizationPassword} />
-          </div>
-        </section>
-      </aside>
     </>
   );
 }

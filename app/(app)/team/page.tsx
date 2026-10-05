@@ -32,28 +32,27 @@ export default async function TeamPage() {
       <main className="mx-auto grid max-w-2xl gap-5 px-4 py-4 desktop:max-w-none desktop:px-8 desktop:py-6 desktop:lg:grid-cols-3 desktop:lg:items-start">
         <h1 className="sr-only">Team</h1>
 
-        <div className="grid gap-5">
-          <section aria-labelledby="company-code" className="grid gap-3 rounded-xl border bg-card p-4">
-            <h2 id="company-code" className="font-semibold">
-              Accesso dei dipendenti
-            </h2>
-            <CodeReveal label="Codice azienda" value={company.code} />
-            <p className="text-sm text-muted-foreground">
-              Ogni persona entra con il codice azienda e il proprio codice personale.
-            </p>
-          </section>
-
-          <CreateEmployee companyCode={company.code} />
-        </div>
+        <section aria-labelledby="company-code" className="grid gap-3 rounded-xl border bg-card p-4">
+          <h2 id="company-code" className="font-semibold">
+            Accesso dei dipendenti
+          </h2>
+          <CodeReveal label="Codice azienda" value={company.code} />
+          <p className="text-sm text-muted-foreground">
+            Ogni persona entra con il codice azienda e il proprio codice personale.
+          </p>
+        </section>
 
         <section aria-labelledby="members-title" className="grid gap-2 desktop:lg:col-span-2">
-          <div className="flex items-baseline justify-between">
-            <h2 id="members-title" className="font-semibold">
-              Persone ({team.length})
-            </h2>
-            <p className="text-sm text-muted-foreground">
-              Amministratori {adminCount}/{MAX_ADMINS}
-            </p>
+          <div className="grid gap-3 desktop:flex desktop:items-end desktop:justify-between">
+            <div className="grid gap-0.5">
+              <h2 id="members-title" className="font-semibold">
+                Persone ({team.length})
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                Amministratori {adminCount}/{MAX_ADMINS}
+              </p>
+            </div>
+            <CreateEmployee companyCode={company.code} />
           </div>
           <ul className="divide-y overflow-hidden rounded-xl border bg-card">
             {team.map((m) => {

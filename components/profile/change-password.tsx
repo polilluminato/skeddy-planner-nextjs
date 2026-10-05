@@ -1,18 +1,57 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import { KeyRoundIcon } from "lucide-react";
 import { toast } from "sonner";
 import { changePassword } from "@/actions/profile";
 import { Field } from "@/components/common/field";
 import { FormError } from "@/components/common/form-error";
+import {
+  Modal,
+  ModalContent,
+  ModalDescription,
+  ModalHeader,
+  ModalTitle,
+  ModalTrigger,
+} from "@/components/common/modal";
 import { SubmitButton } from "@/components/common/submit-button";
+import { Button } from "@/components/ui/button";
 import { useFormAction } from "@/hooks/use-form-action";
 import type { ActionState } from "@/lib/action-state";
 
+type PasswordAction = (prev: ActionState, formData: FormData) => Promise<ActionState>;
+
+/** Bottone che apre il cambio password in una modale. */
+export function ChangePassword({ action }: { action?: PasswordAction }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <Modal open={open} onOpenChange={setOpen}>
+      <ModalTrigger asChild>
+        <Button variant="outline" className="h-11 w-full justify-start text-base">
+          <KeyRoundIcon aria-hidden />
+          Cambia password
+        </Button>
+      </ModalTrigger>
+      <ModalContent>
+        <div className="mx-auto grid w-full max-w-md gap-2 px-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">
+          <ModalHeader className="px-0 text-left">
+            <ModalTitle>Cambia password</ModalTitle>
+            <ModalDescription>Serve la password attuale.</ModalDescription>
+          </ModalHeader>
+          {/* Montato solo da aperto: a ogni apertura riparte da un form vuoto. */}
+          {open && <ChangePasswordForm action={action} onDone={() => setOpen(false)} />}
+        </div>
+      </ModalContent>
+    </Modal>
+  );
+}
+
 export function ChangePasswordForm({
   action = changePassword,
+  onDone,
 }: {
-  action?: (prev: ActionState, formData: FormData) => Promise<ActionState>;
+  action?: PasswordAction;
+  onDone?: () => void;
 }) {
   const formRef = useRef<HTMLFormElement>(null);
   const { state, onSubmit, pending } = useFormAction(async (prev, formData) => {
@@ -20,6 +59,7 @@ export function ChangePasswordForm({
     if (result.ok) {
       toast.success("Password aggiornata");
       formRef.current?.reset();
+      onDone?.();
     }
     return result;
   });
