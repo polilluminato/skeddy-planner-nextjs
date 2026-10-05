@@ -10,13 +10,13 @@ import { SubmitButton } from "@/components/common/submit-button";
 import { TimeField } from "@/components/common/time-field";
 import { Button } from "@/components/ui/button";
 import {
-  Drawer,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-} from "@/components/ui/drawer";
+  Modal,
+  ModalContent,
+  ModalDescription,
+  ModalFooter,
+  ModalHeader,
+  ModalTitle,
+} from "@/components/common/modal";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useFormAction } from "@/hooks/use-form-action";
@@ -31,7 +31,7 @@ export function useShiftEditor() {
   return useContext(EditorContext);
 }
 
-/** Un solo Drawer per tutta la pagina: i pulsanti "aggiungi"/"modifica" lo aprono via contesto. */
+/** Una sola modale per tutta la pagina: i pulsanti "aggiungi"/"modifica" lo aprono via contesto. */
 export function ShiftEditorProvider({
   members,
   children,
@@ -52,13 +52,13 @@ export function ShiftEditorProvider({
   return (
     <EditorContext.Provider value={{ open }}>
       {children}
-      <Drawer open={isOpen} onOpenChange={setIsOpen}>
-        <DrawerContent>
+      <Modal open={isOpen} onOpenChange={setIsOpen}>
+        <ModalContent>
           {draft && (
             <ShiftForm key={formKey} draft={draft} members={members} onDone={() => setIsOpen(false)} />
           )}
-        </DrawerContent>
-      </Drawer>
+        </ModalContent>
+      </Modal>
     </EditorContext.Provider>
   );
 }
@@ -92,10 +92,10 @@ function ShiftForm({ draft, members, onDone }: { draft: Draft; members: Calendar
 
   return (
     <form onSubmit={onSubmit} className="mx-auto w-full max-w-md overflow-y-auto" noValidate>
-      <DrawerHeader className="text-left">
-        <DrawerTitle>{editing ? "Modifica turno" : "Nuovo turno"}</DrawerTitle>
-        <DrawerDescription>{formatLongDay(editing?.date ?? draft.date)}</DrawerDescription>
-      </DrawerHeader>
+      <ModalHeader className="text-left">
+        <ModalTitle>{editing ? "Modifica turno" : "Nuovo turno"}</ModalTitle>
+        <ModalDescription>{formatLongDay(editing?.date ?? draft.date)}</ModalDescription>
+      </ModalHeader>
 
       <div className="grid gap-4 px-4">
         <div className="grid gap-1.5">
@@ -150,7 +150,7 @@ function ShiftForm({ draft, members, onDone }: { draft: Draft; members: Calendar
         <FormError message={state.error} />
       </div>
 
-      <DrawerFooter className="pb-[calc(1rem+env(safe-area-inset-bottom))]">
+      <ModalFooter className="pb-[calc(1rem+env(safe-area-inset-bottom))]">
         <SubmitButton pending={pending}>{editing ? "Salva modifiche" : "Aggiungi turno"}</SubmitButton>
         {editing && (
           <Button
@@ -164,7 +164,7 @@ function ShiftForm({ draft, members, onDone }: { draft: Draft; members: Calendar
             {deleting ? "Eliminazione…" : "Elimina turno"}
           </Button>
         )}
-      </DrawerFooter>
+      </ModalFooter>
     </form>
   );
 }

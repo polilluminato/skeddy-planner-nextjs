@@ -8,31 +8,31 @@ import { FormError } from "@/components/common/form-error";
 import { SubmitButton } from "@/components/common/submit-button";
 import { Button } from "@/components/ui/button";
 import {
-  Drawer,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drawer";
+  Modal,
+  ModalContent,
+  ModalDescription,
+  ModalFooter,
+  ModalHeader,
+  ModalTitle,
+  ModalTrigger,
+} from "@/components/common/modal";
 import { useFormAction } from "@/hooks/use-form-action";
 import { EmployeeFields, type EmployeeDefaults } from "./employee-fields";
 
 export function EditEmployee({ employeeId, defaults }: { employeeId: string; defaults: EmployeeDefaults }) {
   const [open, setOpen] = useState(false);
   return (
-    <Drawer open={open} onOpenChange={setOpen}>
-      <DrawerTrigger asChild>
+    <Modal open={open} onOpenChange={setOpen}>
+      <ModalTrigger asChild>
         <Button variant="outline" className="h-11 flex-1 text-base">
           <PencilIcon aria-hidden />
           Modifica
         </Button>
-      </DrawerTrigger>
-      <DrawerContent>
+      </ModalTrigger>
+      <ModalContent>
         {open && <EditForm employeeId={employeeId} defaults={defaults} onDone={() => setOpen(false)} />}
-      </DrawerContent>
-    </Drawer>
+      </ModalContent>
+    </Modal>
   );
 }
 
@@ -57,17 +57,17 @@ function EditForm({
 
   return (
     <form onSubmit={onSubmit} className="mx-auto w-full max-w-md overflow-y-auto" noValidate>
-      <DrawerHeader className="text-left">
-        <DrawerTitle>Modifica dipendente</DrawerTitle>
-        <DrawerDescription>Nome, ore settimanali e colore nel calendario.</DrawerDescription>
-      </DrawerHeader>
+      <ModalHeader className="text-left">
+        <ModalTitle>Modifica dipendente</ModalTitle>
+        <ModalDescription>Nome, ore settimanali e colore nel calendario.</ModalDescription>
+      </ModalHeader>
       <div className="grid gap-4 px-4">
         <EmployeeFields defaults={defaults} />
         <FormError message={state.error} />
       </div>
-      <DrawerFooter className="pb-[calc(1rem+env(safe-area-inset-bottom))]">
+      <ModalFooter className="pb-[calc(1rem+env(safe-area-inset-bottom))]">
         <SubmitButton pending={pending}>Salva</SubmitButton>
-      </DrawerFooter>
+      </ModalFooter>
     </form>
   );
 }

@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { SIDEBAR_COOKIE } from "@/config/app";
 import { cn } from "@/lib/utils";
 import { LogoutButton } from "./logout-button";
+import { TeamSwitcher, type Team } from "./team-switcher";
 
 const ITEMS = [
   { href: "/calendar", label: "Calendario", icon: CalendarDaysIcon, adminOnly: false },
@@ -26,8 +27,8 @@ const ITEMS = [
   { href: "/team", label: "Team", icon: UsersRoundIcon, adminOnly: true },
   { href: "/profile", label: "Profilo", icon: UserRoundIcon, adminOnly: false },
 ];
-// L'Amministrazione non ha un profilo nel team: al suo posto la scelta del negozio.
-const SWITCH_ITEM = { href: "/org", label: "Negozi", icon: StoreIcon, adminOnly: true };
+// Gestione dei negozi dell'Amministrazione: solo nella sidebar, su mobile c'è il cambio negozio.
+const ORG_ITEM = { href: "/org", label: "Negozi", icon: StoreIcon, adminOnly: true, desktopOnly: true };
 
 /**
  * Navigazione principale: bottom nav su mobile; per gli admin, da desktop,
@@ -39,17 +40,20 @@ export function AppNav({
   unread,
   defaultCollapsed,
   activeTeam,
+  teams,
 }: {
   isAdmin: boolean;
   unread: number;
   defaultCollapsed: boolean;
-  /** Solo per l'Amministrazione: il team su cui sta operando. */
-  activeTeam?: string;
+  /** Solo per l'Amministrazione: il team su cui sta operando e quelli tra cui può scegliere. */
+  activeTeam?: Team;
+  teams?: Team[];
 }) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(defaultCollapsed);
-  const items = activeTeam
-    ? ITEMS.map((item) => (item.href === "/profile" ? SWITCH_ITEM : item))
+  // L'Amministrazione non ha un profilo nel team: al suo posto i Negozi in sidebar e, su mobile, il cambio negozio (vedi sotto).
+  const items: { href: string; label: string; icon: typeof StoreIcon; desktopOnly?: boolean }[] = activeTeam
+    ? ITEMS.map((item) => (item.href === "/profile" ? ORG_ITEM : item))
     : ITEMS.filter((item) => isAdmin || !item.adminOnly);
 
   function toggle() {
@@ -85,30 +89,32 @@ export function AppNav({
           {collapsed ? <PanelLeftOpenIcon className="size-5" aria-hidden /> : <PanelLeftCloseIcon className="size-5" aria-hidden />}
         </button>
       </div>
-      {activeTeam && (
-        <Link
-          href="/org"
-          title={collapsed ? `Negozio: ${activeTeam}. Cambia negozio` : undefined}
-          className={cn(
-            "mt-2 hidden min-h-11 items-center gap-3 rounded-lg border text-sm transition-colors hover:bg-accent desktop:flex",
-            collapsed ? "mx-2 justify-center" : "mx-3 px-3",
-          )}
-        >
-          <StoreIcon className="size-5 shrink-0 text-muted-foreground" aria-hidden />
-          <span className={cn("grid min-w-0 flex-1 py-1.5", collapsed && "sr-only")}>
-            <span className="text-xs text-muted-foreground">Negozio</span>
-            <span className="truncate font-medium">{activeTeam}</span>
-          </span>
-          {!collapsed && <ArrowLeftRightIcon className="size-4 shrink-0 text-muted-foreground" aria-hidden />}
-        </Link>
+      {activeTeam && teams && (
+        <TeamSwitcher key={activeTeam.id} teams={teams} active={activeTeam}>
+          <button
+            type="button"
+            title={collapsed ? `Negozio: ${activeTeam.name}. Cambia negozio` : undefined}
+            className={cn(
+              "mt-2 hidden min-h-11 items-center gap-3 rounded-lg border text-left text-sm transition-colors hover:bg-accent desktop:flex",
+              collapsed ? "mx-2 justify-center" : "mx-3 px-3",
+            )}
+          >
+            <StoreIcon className="size-5 shrink-0 text-muted-foreground" aria-hidden />
+            <span className={cn("grid min-w-0 flex-1 py-1.5", collapsed && "sr-only")}>
+              <span className="text-xs text-muted-foreground">Negozio</span>
+              <span className="truncate font-medium">{activeTeam.name}</span>
+            </span>
+            {!collapsed && <ArrowLeftRightIcon className="size-4 shrink-0 text-muted-foreground" aria-hidden />}
+          </button>
+        </TeamSwitcher>
       )}
       <ul className={cn("mx-auto flex max-w-2xl desktop:mx-0 desktop:mt-2 desktop:max-w-none desktop:flex-col desktop:gap-1", collapsed ? "desktop:px-2" : "desktop:px-3")}>
-        {items.map(({ href, label, icon: Icon }) => {
+        {items.map(({ href, label, icon: Icon, desktopOnly }) => {
           const active = pathname === href || pathname.startsWith(`${href}/`);
           // Sulla pagina dei messaggi li si sta leggendo: niente badge.
           const badge = href === "/messages" && !active && unread > 0 ? unread : 0;
           return (
-            <li key={href} className="flex-1">
+            <li key={href} className={cn("flex-1", desktopOnly && "hidden desktop:block")}>
               <Link
                 href={href}
                 aria-current={active ? "page" : undefined}
@@ -139,6 +145,20 @@ export function AppNav({
             </li>
           );
         })}
+        {/* Su desktop c'è già il negozio in cima alla sidebar. */}
+        {activeTeam && teams && (
+          <li className="flex-1 desktop:hidden">
+            <TeamSwitcher key={activeTeam.id} teams={teams} active={activeTeam}>
+              <button
+                type="button"
+                className="flex min-h-14 w-full flex-col items-center justify-center gap-0.5 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
+              >
+                <StoreIcon className="size-5" aria-hidden />
+                Negozi
+              </button>
+            </TeamSwitcher>
+          </li>
+        )}
       </ul>
       {/* Solo nella sidebar desktop; su mobile si esce dal Profilo. */}
       <div className={cn("mt-auto hidden desktop:block", collapsed ? "desktop:px-2" : "desktop:px-3")}>

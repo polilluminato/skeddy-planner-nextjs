@@ -6,7 +6,7 @@ import { requireUser } from "@/lib/auth/guards";
 import { countUnreadMessages } from "@/lib/queries";
 
 export default async function AppLayout({ children }: LayoutProps<"/">) {
-  const { user, company, companyId, isAdmin, isSupervisor } = await requireUser();
+  const { user, organization, company, companyId, isAdmin } = await requireUser();
   // L'Amministrazione scrive i messaggi ma non ha uno stato di lettura.
   const unread = user ? await countUnreadMessages(companyId, user.messagesReadAt) : 0;
   const collapsed = (await cookies()).get(SIDEBAR_COOKIE)?.value === "collapsed";
@@ -21,7 +21,8 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
         isAdmin={isAdmin}
         unread={unread}
         defaultCollapsed={collapsed}
-        activeTeam={isSupervisor ? company.name : undefined}
+        activeTeam={organization ? { id: company.id, name: company.name } : undefined}
+        teams={organization?.companies.map(({ id, name }) => ({ id, name }))}
       />
       {/* Riaprendo la PWA si riprendono turni e messaggi non letti. */}
       <AutoRefresh onVisible />

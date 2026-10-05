@@ -5,13 +5,13 @@ import { ThemeToggle } from "@/components/nav/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { requireSupervisor } from "@/lib/auth/guards";
 
-/** Area dell'Amministrazione: scelta del negozio su cui operare, nuovi negozi, account. */
+/** Area dell'Amministrazione: scelta del negozio su cui operare, nuovi negozi, account. Solo vista desktop (uso da PC). */
 export default async function OrganizationLayout({ children }: LayoutProps<"/org">) {
   const { organization } = await requireSupervisor();
   return (
-    <div className="min-h-dvh pb-[env(safe-area-inset-bottom)]">
-      <header className="sticky top-0 z-30 border-b bg-background/90 pt-[env(safe-area-inset-top)] backdrop-blur">
-        <div className="mx-auto flex h-14 max-w-2xl items-center gap-3 px-4">
+    <div className="min-h-dvh min-w-5xl">
+      <header className="sticky top-0 z-30 border-b bg-background/90 backdrop-blur">
+        <div className="mx-auto flex h-16 max-w-6xl items-center gap-3 px-8">
           <LogoMark className="size-7 shrink-0" />
           <div className="min-w-0 flex-1">
             <p className="truncate font-semibold leading-tight">Amministrazione</p>
@@ -27,7 +27,7 @@ export default async function OrganizationLayout({ children }: LayoutProps<"/org
           />
         </div>
       </header>
-      <main className="mx-auto grid max-w-2xl gap-5 px-4 py-4">{children}</main>
+      <main className="mx-auto grid max-w-6xl grid-cols-[1fr_22rem] items-start gap-8 px-8 py-8">{children}</main>
     </div>
   );
 }
