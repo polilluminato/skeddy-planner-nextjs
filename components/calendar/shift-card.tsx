@@ -1,11 +1,10 @@
 "use client";
 
 import { ChevronRightIcon } from "lucide-react";
-import { MemberChip } from "@/components/common/member-chip";
 import { formatMinutes, shiftMinutes } from "@/lib/domain/shifts";
 import { cn } from "@/lib/utils";
 import { useShiftEditor } from "./shift-editor";
-import { memberName, tint, type CalendarMember, type CalendarShift } from "./types";
+import { memberName, type CalendarMember, type CalendarShift } from "./types";
 
 type Props = {
   shift: CalendarShift;
@@ -26,23 +25,23 @@ export function ShiftCard({ shift, member, isMine, canEdit }: Props) {
           <span className="font-semibold tabular-nums">
             {shift.start}–{shift.end}
           </span>
-          <span className="text-xs text-muted-foreground tabular-nums">{duration}</span>
+          <span className="text-xs text-white/80 tabular-nums">{duration}</span>
         </span>
         <span className="mt-0.5 flex min-w-0 items-center text-sm">
-          <MemberChip name={name} color={member.color} />
-          {isMine && <span className="ml-1.5 shrink-0 text-xs font-semibold text-primary">(tu)</span>}
+          <span className="truncate font-medium">{name}</span>
+          {isMine && <span className="ml-1.5 shrink-0 text-xs font-semibold">(tu)</span>}
         </span>
-        {shift.note && <span className="truncate text-xs text-muted-foreground">{shift.note}</span>}
+        {shift.note && <span className="truncate text-xs text-white/80">{shift.note}</span>}
       </span>
-      {canEdit && <ChevronRightIcon className="size-4 shrink-0 text-muted-foreground" aria-hidden />}
+      {canEdit && <ChevronRightIcon className="size-4 shrink-0 text-white/80" aria-hidden />}
     </>
   );
 
   const className = cn(
-    "flex min-h-11 w-full items-center gap-2 rounded-lg border border-l-4 px-3 py-2",
+    "flex min-h-11 w-full items-center gap-2 rounded-lg px-3 py-2 text-white [print-color-adjust:exact]",
     isMine && "ring-2 ring-primary/40",
   );
-  const style = { borderLeftColor: member.color, background: tint(member.color) };
+  const style = { background: member.color };
 
   if (!canEdit || !editor) {
     return (

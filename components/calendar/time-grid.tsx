@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { MemberChip } from "@/components/common/member-chip";
 import { calendarHref } from "@/lib/domain/calendar";
 import { dayOfMonth, formatLongDay, formatShortWeekday } from "@/lib/domain/format";
 import { groupByDate } from "@/lib/domain/schedule";
@@ -17,7 +16,7 @@ import {
 } from "@/lib/domain/time-grid";
 import { cn } from "@/lib/utils";
 import { useShiftEditor } from "./shift-editor";
-import { memberName, tint, type CalendarMember, type CalendarShift } from "./types";
+import { memberName, type CalendarMember, type CalendarShift } from "./types";
 
 /** Altezza di un'ora nella griglia. */
 const HOUR_REM = 3.5;
@@ -194,18 +193,16 @@ function GridShift({
   // Sotto l'ora il blocco è basso: nome e orario su una riga sola.
   const compact = shiftMinutes(shift) < 60;
   const className = cn(
-    "flex h-full w-full min-w-0 overflow-hidden rounded-md border border-l-4 border-card px-2 py-1 text-left text-xs shadow-xs",
+    "flex h-full w-full min-w-0 overflow-hidden rounded-md border border-card px-2 py-1 text-left text-xs text-white shadow-xs [print-color-adjust:exact]",
     compact ? "items-center gap-1.5" : "flex-col",
     isMine && "ring-2 ring-primary/40",
   );
-  const style = { borderLeftColor: member.color, background: tint(member.color, 22) };
+  const style = { background: member.color };
   const content = (
     <>
-      <span className="flex min-w-0 shrink">
-        <MemberChip name={name} color={member.color} />
-      </span>
-      <span className="truncate text-muted-foreground tabular-nums">{time}</span>
-      {!compact && shift.note && <span className="truncate text-muted-foreground">{shift.note}</span>}
+      <span className="min-w-0 shrink truncate font-medium">{name}</span>
+      <span className="truncate text-white/85 tabular-nums">{time}</span>
+      {!compact && shift.note && <span className="truncate text-white/85">{shift.note}</span>}
     </>
   );
 

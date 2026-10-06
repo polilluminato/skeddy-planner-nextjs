@@ -27,7 +27,7 @@ export function ChangePassword({ action }: { action?: PasswordAction }) {
   return (
     <Modal open={open} onOpenChange={setOpen}>
       <ModalTrigger asChild>
-        <Button variant="outline" className="h-11 w-full justify-start text-base">
+        <Button variant="outline" className="h-11">
           <KeyRoundIcon aria-hidden />
           Cambia password
         </Button>

@@ -27,11 +27,14 @@ export default async function OrganizationPage() {
       <h1 className="sr-only">Negozi</h1>
 
       <section aria-labelledby="account-title" className="grid gap-3 rounded-xl border bg-card p-4">
-        <div className="grid gap-0.5">
-          <h2 id="account-title" className="font-semibold">
-            Account
-          </h2>
-          <p className="truncate text-sm text-muted-foreground">{organization.email}</p>
+        <div className="flex items-start justify-between gap-3">
+          <div className="grid min-w-0 gap-0.5">
+            <h2 id="account-title" className="font-semibold">
+              Account
+            </h2>
+            <p className="truncate text-sm text-muted-foreground">{organization.email}</p>
+          </div>
+          <ChangePassword action={changeOrganizationPassword} />
         </div>
         <RenameForm
           key={organization.name}
@@ -40,13 +43,9 @@ export default async function OrganizationPage() {
           defaultValue={organization.name}
           action={renameOrganization}
         />
-        <div className="grid gap-2 border-t pt-3">
-          <h3 className="mb-1 font-semibold">Accesso e permessi</h3>
-          <ChangePassword action={changeOrganizationPassword} />
-        </div>
       </section>
 
-      <section aria-labelledby="teams-title" className="col-span-2 grid gap-2">
+      <section aria-labelledby="teams-title" className="grid gap-2">
         <div className="flex items-end justify-between gap-3">
           <div className="grid gap-0.5">
             <h2 id="teams-title" className="font-semibold">

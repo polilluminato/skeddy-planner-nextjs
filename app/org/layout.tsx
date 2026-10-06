@@ -31,7 +31,7 @@ export default async function OrganizationLayout({ children }: LayoutProps<"/org
           />
         )}
       </AppHeader>
-      <main className="grid grid-cols-3 items-start gap-5 px-8 py-6">{children}</main>
+      <main className="grid gap-5 px-8 py-6">{children}</main>
       {active && (
         <AppNav
           isAdmin

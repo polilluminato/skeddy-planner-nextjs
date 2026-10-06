@@ -29,7 +29,7 @@ export default async function TeamPage() {
   return (
     <>
       <AppHeader title="Team" subtitle={company.name} />
-      <main className="mx-auto grid max-w-2xl gap-5 px-4 py-4 desktop:max-w-none desktop:px-8 desktop:py-6 desktop:lg:grid-cols-3 desktop:lg:items-start">
+      <main className="mx-auto grid max-w-2xl gap-5 px-4 py-4 desktop:max-w-none desktop:px-8 desktop:py-6">
         <h1 className="sr-only">Team</h1>
 
         <section aria-labelledby="company-code" className="grid gap-3 rounded-xl border bg-card p-4">
@@ -42,7 +42,7 @@ export default async function TeamPage() {
           </p>
         </section>
 
-        <section aria-labelledby="members-title" className="grid gap-2 desktop:lg:col-span-2">
+        <section aria-labelledby="members-title" className="grid gap-2">
           <div className="grid gap-3 desktop:flex desktop:items-end desktop:justify-between">
             <div className="grid gap-0.5">
               <h2 id="members-title" className="font-semibold">
