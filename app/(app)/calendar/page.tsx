@@ -74,15 +74,19 @@ export default async function CalendarPage({ searchParams }: PageProps<"/calenda
   const exportActions = isAdmin && (
     <>
       <Button asChild variant="outline" className="h-11">
-        <a href={`/calendar/export?month=${state.date.slice(0, 7)}`} download>
+        <a
+          href={`/calendar/export?month=${state.date.slice(0, 7)}`}
+          download
+          title={`Scarica i turni di ${formatMonthYear(state.date)} in CSV`}
+        >
           <DownloadIcon aria-hidden />
-          CSV {formatMonthYear(state.date)}
+          CSV
         </a>
       </Button>
       <Button asChild variant="outline" className="h-11">
-        <a href={`/print/week?date=${state.date}`} target="_blank">
+        <a href={`/print/week?date=${state.date}`} target="_blank" title="Stampa la settimana">
           <PrinterIcon aria-hidden />
-          Stampa settimana
+          Stampa
         </a>
       </Button>
     </>
@@ -101,7 +105,7 @@ export default async function CalendarPage({ searchParams }: PageProps<"/calenda
         />
       )}
       {/* Su mobile le card delle ore sono nascoste: le azioni vanno sopra le tab. */}
-      {exportActions && <div className="flex flex-wrap gap-2 desktop:hidden">{exportActions}</div>}
+      {exportActions && <div className="grid grid-cols-2 gap-2 desktop:hidden">{exportActions}</div>}
       <div className="grid gap-4 desktop:flex desktop:items-center desktop:gap-6">
         <div className="desktop:flex-1">
           <CalendarToolbar state={state} today={today} extraParams={extraParams} />

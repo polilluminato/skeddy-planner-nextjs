@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { KeyRoundIcon } from "lucide-react";
 import { toast } from "sonner";
 import { changePassword } from "@/actions/profile";
@@ -46,26 +46,24 @@ export function ChangePassword({ action }: { action?: PasswordAction }) {
   );
 }
 
-export function ChangePasswordForm({
+function ChangePasswordForm({
   action = changePassword,
   onDone,
 }: {
   action?: PasswordAction;
   onDone?: () => void;
 }) {
-  const formRef = useRef<HTMLFormElement>(null);
   const { state, onSubmit, pending } = useFormAction(async (prev, formData) => {
     const result = await action(prev, formData);
     if (result.ok) {
       toast.success("Password aggiornata");
-      formRef.current?.reset();
       onDone?.();
     }
     return result;
   });
 
   return (
-    <form ref={formRef} onSubmit={onSubmit} className="grid gap-4" noValidate>
+    <form onSubmit={onSubmit} className="grid gap-4" noValidate>
       <Field label="Password attuale" name="currentPassword" type="password" autoComplete="current-password" required />
       <Field
         label="Nuova password"

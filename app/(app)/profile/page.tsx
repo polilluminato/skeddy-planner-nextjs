@@ -6,7 +6,7 @@ import { CodeReveal } from "@/components/common/code-reveal";
 import { MemberChip } from "@/components/common/member-chip";
 import { AppHeader } from "@/components/nav/app-header";
 import { LogoutButton } from "@/components/nav/logout-button";
-import { ChangePasswordForm } from "@/components/profile/change-password";
+import { ChangePassword } from "@/components/profile/change-password";
 import { MemberBadges } from "@/components/team/member-badges";
 import { Button } from "@/components/ui/button";
 import { APP_TIME_ZONE } from "@/config/app";
@@ -59,6 +59,7 @@ export default async function ProfilePage() {
             )}
           </dl>
           <CodeReveal label="Codice azienda" value={company.code} />
+          {user.passwordHash && <ChangePassword />}
         </section>
 
         <HoursSummary
@@ -66,15 +67,6 @@ export default async function ProfilePage() {
           members={members}
           title={`Le mie ore · ${formatWeekRange(weekStart)}`}
         />
-
-        {user.passwordHash && (
-          <section aria-labelledby="password-title" className="grid gap-3 rounded-xl border bg-card p-4">
-            <h2 id="password-title" className="font-semibold">
-              Password
-            </h2>
-            <ChangePasswordForm />
-          </section>
-        )}
       </main>
     </>
   );
